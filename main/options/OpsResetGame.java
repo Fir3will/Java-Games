@@ -2,6 +2,7 @@ package main.options;
 
 import java.awt.event.ActionEvent;
 import java.nio.file.Paths;
+import main.Save;
 import main.Vars;
 import main.utils.WarningFrame;
 import main.utils.WarningFrame.ButtonClicked;
@@ -20,12 +21,12 @@ public class OpsResetGame extends OptionBar
 			{
 				if (type == ButtonClicked.YES_CLICKED)
 				{
-					FileHelper.deleteDirectory(Paths.get(Vars.extension.substring(0, Vars.extension.lastIndexOf("/"))).toFile());
+					FileHelper.deleteDirectory(Paths.get(Vars.HOME_DIR.substring(0, Vars.HOME_DIR.lastIndexOf("/"))).toFile());
 					System.exit(0);
 				}
 				else
 				{
-					System.out.println("The Cats have been SAVED! By: " + Vars.playerName);
+					System.out.println("The Cats have been SAVED! By: " + Save.PLAYER_NAME);
 				}
 			}
 

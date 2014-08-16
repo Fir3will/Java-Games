@@ -6,10 +6,11 @@ import java.awt.image.ImageObserver;
 
 public class CrateTS extends SpriteTS
 {
-	public CrateTS()
+	private static final long serialVersionUID = 1L;
+
+	public CrateTS(int x, int y)
 	{
-		super(500, 500, 20, 20);
-		// TODO Auto-generated constructor stub
+		super(x, y, 20, 20);
 	}
 
 	@Override

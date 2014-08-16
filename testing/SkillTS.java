@@ -1,9 +1,13 @@
 package testing;
 
+import java.io.Serializable;
+import main.utils.helper.Sound;
 import main.utils.helper.Utils;
 
-public class SkillTS
+public class SkillTS implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	public static enum SkillsTS
 	{
 		ATTACK(1, "Attack", true), DEFENCE(2, "Defence", true);
@@ -40,12 +44,8 @@ public class SkillTS
 		return Utils.toExponent(level, 4);
 	}
 
-	private int skillID;
 	private String skillName;
-	private int xp = 1;
-
-	private int level = 1;
-
+	private int skillID, xp = 1, level = 1;
 	private boolean isCombatSkill;
 
 	public SkillTS(SkillsTS skill)
@@ -63,6 +63,7 @@ public class SkillTS
 		}
 		else
 		{
+			Sound.playSound(Sound.LEVEL_UP, false, 0.0F);
 			level += 1;
 			addXP(xp);
 		}

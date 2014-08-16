@@ -28,7 +28,7 @@ public class FVisitor implements FileVisitor<Path>
 	{
 		if (file.toString().endsWith(".zip") || file.toString().endsWith(".jar"))
 		{
-			File dir = new File(Vars.extension + "natives/" + file.getFileName().toString().replaceAll(".zip", "").replaceAll(".jar", ""));
+			File dir = new File(Vars.HOME_DIR + "natives/" + file.getFileName().toString().replaceAll(".zip", "").replaceAll(".jar", ""));
 
 			if (file.toString().endsWith(".zip"))
 			{

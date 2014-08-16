@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import main.Save;
 import main.Vars;
 import main.utils.WarningFrame;
 import main.utils.WarningFrame.ButtonClicked;
@@ -83,7 +84,7 @@ public class OpsChangePassword extends OptionBar
 				password.setForeground(Color.RED);
 				password.setText("Invalid New Password!");
 			}
-			else if (oldPassword.getText().equals(Vars.saveFilePassword))
+			else if (oldPassword.getText().equals(Save.FILE_PASSWORD))
 			{
 				new WarningFrame(new WarningAction()
 				{
@@ -94,7 +95,7 @@ public class OpsChangePassword extends OptionBar
 						if (type == ButtonClicked.YES_CLICKED)
 						{
 							System.out.println("New Password Set: " + password.getText());
-							Vars.saveFilePassword = password.getText();
+							Save.FILE_PASSWORD = password.getText();
 							frame.dispose();
 						}
 						else

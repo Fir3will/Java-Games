@@ -1,10 +1,13 @@
 package testing;
 
 import java.awt.Image;
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 
-public class ItemTS
+public class ItemTS implements Serializable
 {
+	private static final long serialVersionUID = 1L;
+
 	public enum EnumRarity
 	{
 		FREQUENT, REGULAR, COMMON, UNCOMMON, SCARCE, RARE, IMPOSSIBLE, UNFRIGGINBELIEVABLE;
@@ -14,26 +17,14 @@ public class ItemTS
 	{
 		public static ItemTS[] allItems = new ItemTS[2056];
 
-		public static ItemTS ironSword = new ItemTS("Iron Sword");
-		public static ItemTS ironHelmet = new ItemTS("Iron Helmet");
-		public static ItemTS ironChestplate = new ItemTS("Iron Chestplate");
-		public static ItemTS ironLeggings = new ItemTS("Iron Leggings");
-		public static ItemTS ironBoots = new ItemTS("Iron Boots");
-		public static ItemTS ironGauntlets = new ItemTS("Iron Gauntlets");
-		public static ItemTS ironShield = new ItemTS("Iron Shield");
-		public static ItemTS healthPack = new ItemTS("Health Pack");
-
-		public static void addItems()
-		{
-			ItemsTS.ironSword = new ItemTS("Iron Sword");
-			ItemsTS.ironHelmet = new ItemTS("Iron Helmet");
-			ItemsTS.ironChestplate = new ItemTS("Iron Chestplate");
-			ItemsTS.ironLeggings = new ItemTS("Iron Leggings");
-			ItemsTS.ironBoots = new ItemTS("Iron Boots");
-			ItemsTS.ironGauntlets = new ItemTS("Iron Gauntlets");
-			ItemsTS.ironShield = new ItemTS("Iron Shield");
-			ItemsTS.healthPack = new ItemTS("Health Pack");
-		}
+		public static final ItemTS ironSword = new ItemTS("Iron Sword");
+		public static final ItemTS ironHelmet = new ItemTS("Iron Helmet");
+		public static final ItemTS ironChestplate = new ItemTS("Iron Chestplate");
+		public static final ItemTS ironLeggings = new ItemTS("Iron Leggings");
+		public static final ItemTS ironBoots = new ItemTS("Iron Boots");
+		public static final ItemTS ironGauntlets = new ItemTS("Iron Gauntlets");
+		public static final ItemTS ironShield = new ItemTS("Iron Shield");
+		public static final ItemTS healthPack = new ItemTS("Health Pack");
 	}
 
 	private static int counter = 1;
@@ -52,11 +43,9 @@ public class ItemTS
 		return null;
 	}
 
-	public int itemID;
-
+	public int itemID = 0;
 	public String itemName;
-
-	public Image icon;
+	public transient Image icon;
 
 	public ItemTS(String itemname)
 	{

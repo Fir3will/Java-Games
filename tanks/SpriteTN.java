@@ -1,24 +1,24 @@
 package tanks;
 
-import java.awt.Image;
 import java.awt.Rectangle;
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 import main.utils.math.Vector2F;
 
-public abstract class SpriteTN
+public abstract class SpriteTN implements Serializable
 {
+	private static final long serialVersionUID = 1L;
 	private boolean destroyed;
 	protected int height;
-	protected Image image;
+	protected ImageIcon image;
 	protected int width;
 	protected int x, y, xV, yV;
 
 	public SpriteTN(String path)
 	{
-		ImageIcon ii = new ImageIcon(this.getClass().getResource(path));
-		image = ii.getImage();
-		width = image.getWidth(null);
-		height = image.getHeight(null);
+		image = new ImageIcon(this.getClass().getResource(path));
+		width = image.getImage().getWidth(null);
+		height = image.getImage().getHeight(null);
 	}
 
 	public Rectangle getBounds()
@@ -31,7 +31,7 @@ public abstract class SpriteTN
 		return height;
 	}
 
-	public Image getImage()
+	public ImageIcon getImage()
 	{
 		return image;
 	}

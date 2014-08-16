@@ -4,16 +4,22 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.ImageObserver;
 import java.io.Serializable;
+import main.utils.helper.Sound;
 import main.utils.math.Vector2F;
 
-public class BulletVT extends EntityVT implements Serializable
+public class BulletVT extends SpriteVT implements Serializable
 {
 	private final Vector2F destination;
+	private final float speed, damage;
+	private int ticksExisted;
 
-	public BulletVT(TestFrame main, Vector2F location, Vector2F destination)
+	public BulletVT(TestFrame main, Vector2F location, Vector2F destination, float speed, float damage)
 	{
 		super(main, (int) location.x, (int) location.y, 1, 1);
+		Sound.playSound(Sound.GUNSHOT, false, 0.0F);
 		this.destination = destination;
+		this.speed = speed;
+		this.damage = damage;
 	}
 
 	@Override
@@ -26,21 +32,22 @@ public class BulletVT extends EntityVT implements Serializable
 	@Override
 	public void run()
 	{
-		this.moveTo(destination, 5.0F);
+		this.moveTo(destination, speed);
 
-		if (y > 600 || y < 0 || x > 400 || x < 0 || this.getDistanceTo(destination) < 10.0F)
+		if (ticksExisted++ > 100)
 		{
 			setDestroyed(true);
 		}
 	}
 
 	@Override
-	public void collidedWith(EntityVT sprite)
+	public void collidedWith(SpriteVT sprite)
 	{
 		if (sprite instanceof ZombieVT)
 		{
-			((ZombieVT) sprite).health--;
+			((ZombieVT) sprite).health -= damage;
 			setDestroyed(true);
+			Sound.playSound(Sound.FLESH_SHOT, false, 0.0F);
 		}
 	}
 

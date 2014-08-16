@@ -1,6 +1,7 @@
 package main.options;
 
 import java.awt.event.ActionEvent;
+import main.Save;
 import main.Vars;
 import main.utils.WarningFrame;
 import main.utils.WarningFrame.ButtonClicked;
@@ -21,19 +22,19 @@ public class OpsLogout extends OptionBar
 				{
 					for (int i = 0; i < Vars.frames.size(); i++)
 					{
-						Vars.save.saveGame();
 						Vars.frames.get(i).dispose();
 					}
+					Vars.save.save();
 					Vars.login.setVisible(true);
 
-					System.out.println("\"" + Vars.playerName + "\" Logged Out!");
+					System.out.println("\"" + Save.PLAYER_NAME + "\" Logged Out!");
 				}
 			}
 
 			@Override
 			public String getWarningMessage()
 			{
-				return "Logout of " + Vars.playerName + "?";
+				return "Logout of " + Save.PLAYER_NAME + "?";
 			}
 
 			@Override

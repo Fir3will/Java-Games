@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class EnemyTN extends SpriteTN
 {
+	private static final long serialVersionUID = 1L;
 	private EnumFace face;
 	private ArrayList<MissileTN> missiles;
 	private int tankState;

@@ -1,33 +1,33 @@
 package testing;
 
 import java.awt.event.KeyEvent;
-import main.Vars;
+import main.Save;
 
 public class PlayerTS extends LivingSpriteTS
 {
+	private static final long serialVersionUID = 1L;
 	private int homeDelay = 0;
 
 	public PlayerTS()
 	{
-		// super(Vars.tsX, Vars.tsY, "/Images/Testing/player.png", 50, false);
-		super(Vars.tsX, Vars.tsY, 20, 20, 50, false);
+		super(400, 300, 20, 20, 50, false);
 		toggleCanLevel();
 
-		setSpriteName(Vars.playerName);
-		addXPToSkill(0, Vars.tsAttackXP);
-		addXPToSkill(1, Vars.tsDefenceXP);
-		setHealth(Vars.tsHealth);
+		setSpriteName(Save.PLAYER_NAME);
+		addXPToSkill(0, Save.TS_ATTACK_XP);
+		addXPToSkill(1, Save.TS_DEFENCE_XP);
+		setHealth(Save.TS_HEALTH);
+		setCanPass(true);
 
-		canPass = true;
-		for (int i = 0; i < Vars.tsPlayerItems.length; i++)
+		for (int i = 0; i < Save.TS_ITEMS.length; i++)
 		{
-			this.addItemToInventory(Vars.tsPlayerItems[i]);
+			addItemToInventory(Save.TS_ITEMS[i]);
 		}
 	}
 
 	public int getCoins()
 	{
-		return Vars.tsCoins;
+		return Save.TS_COINS;
 	}
 
 	public SkillTS getLevel(int skillID)
@@ -38,12 +38,12 @@ public class PlayerTS extends LivingSpriteTS
 	@Override
 	public void init()
 	{
-		Vars.tsAttackXP = getXPFromSkill(0);
-		Vars.tsDefenceXP = getXPFromSkill(1);
-		Vars.tsX = getX();
-		Vars.tsY = getY();
-		Vars.tsHealth = getHealth();
-		Vars.tsPlayerItems = getInv();
+		Save.TS_ATTACK_XP = getXPFromSkill(0);
+		Save.TS_DEFENCE_XP = getXPFromSkill(1);
+		Save.TS_X = getX();
+		Save.TS_Y = getY();
+		Save.TS_HEALTH = getHealth();
+		Save.TS_ITEMS = getInv();
 
 		homeDelay++;
 		x += xV;
@@ -56,13 +56,13 @@ public class PlayerTS extends LivingSpriteTS
 
 		if (key == KeyEvent.VK_1)
 		{
-			Testing.chat.append("You are now traning " + getSkill(0) + '\n');
+			RPG.chat.append("You are now traning " + getSkill(0) + '\n');
 			setActivatedSkill(0);
 		}
 
 		if (key == KeyEvent.VK_2)
 		{
-			Testing.chat.append("You are now traning " + getSkill(1) + '\n');
+			RPG.chat.append("You are now traning " + getSkill(1) + '\n');
 			setActivatedSkill(1);
 		}
 
@@ -112,7 +112,7 @@ public class PlayerTS extends LivingSpriteTS
 	{
 		System.out.println("Processing Command: \"" + line + "\"");
 
-		if (line.equals("/Home"))
+		if (line.equals("::home"))
 		{
 			if (homeDelay >= 1000)
 			{
@@ -122,13 +122,13 @@ public class PlayerTS extends LivingSpriteTS
 			}
 			else
 			{
-				Testing.chat.append("You have to wait " + (10 - homeDelay / 100) + " more seconds!\n");
+				RPG.chat.append("You have to wait " + (10 - homeDelay / 100) + " more seconds!\n");
 			}
 		}
 	}
 
 	public void setCoins(int c)
 	{
-		Vars.tsCoins = c;
+		Save.TS_COINS = c;
 	}
 }

@@ -2,14 +2,16 @@ package customcode;
 
 import java.awt.Graphics2D;
 import main.games.GamePanel;
+import main.games.NewGame;
 import main.utils.Rand;
 
-public class MyGame extends GamePanel
+@NewGame(name = "My Game")
+public class Game extends GamePanel
 {
 	private static final long serialVersionUID = 1L;
 	private final int rand;
 
-	public MyGame()
+	public Game()
 	{
 		super(25, 400, 200);
 		rand = Rand.nextInt();
@@ -33,11 +35,4 @@ public class MyGame extends GamePanel
 		g2d.drawString("Ticks: " + getTicks(), 200, 100);
 		g2d.drawString("My Random: " + rand, 200, 130);
 	}
-
-	@Override
-	public String getGameName()
-	{
-		return "My Game";
-	}
-
 }

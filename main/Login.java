@@ -102,13 +102,13 @@ public class Login extends JPanel implements ActionListener, KeyListener
 				}
 				else
 				{
-					Vars.playerName = userName.getText();
-					Vars.saveFilePassword = password.getText();
-					Vars.save = new SaveFile();
+					Vars.save = new Save();
+					Save.FILE_PASSWORD = password.getText();
+					Save.PLAYER_NAME = userName.getText();
 
-					if (Vars.save.fileCheck())
+					if (Vars.save.canLogin())
 					{
-						Vars.save.init();
+						Save.FILE_PASSWORD = password.getText();
 						loggedIn = true;
 						Games.openLauncher();
 						Vars.login.dispose();
@@ -125,7 +125,7 @@ public class Login extends JPanel implements ActionListener, KeyListener
 					}
 					else
 					{
-						info.setText("Incorrect Password and Username Combination! \n Did you change the Password? You can use a different username to create a new account. But if you are trying to reset a save, login to the/any account, go to Options, and click Reset Save");
+						info.setText("Incorrect Username or Password! \nDid you change the Password? You can use a different username to create a new account. But if you are trying to reset a save, login to the/any account, go to Options, and click Reset Save");
 						userName.setBackground(Color.RED);
 						password.setBackground(Color.RED);
 						Vars.save = null;
@@ -134,7 +134,7 @@ public class Login extends JPanel implements ActionListener, KeyListener
 			}
 			catch (InvalidPathException f)
 			{
-				info.setText("Invalid Letters for the name or password! FIX IT!");
+				info.setText("Invalid Letters for the name or password!");
 				userName.setBackground(Color.RED);
 				password.setBackground(Color.RED);
 			}

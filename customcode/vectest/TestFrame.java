@@ -1,27 +1,18 @@
 package customcode.vectest;
 
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.Serializable;
 import java.util.ArrayList;
-import javax.swing.JPanel;
-import javax.swing.Timer;
-import main.Vars;
-import main.utils.Rand;
-import customcode.CodingMod;
+import main.Save;
+import main.games.GamePanel;
+import main.games.NewGame;
+import main.utils.Keys;
 
-public class TestFrame extends JPanel implements ActionListener, Serializable
+@NewGame(name = "Zombies")
+public class TestFrame extends GamePanel
 {
-	private static boolean isPlaying;
-	private Timer timer;
 	private static final long serialVersionUID = 1L;
-	public final ArrayList<EntityVT> sprites = new ArrayList<EntityVT>();
+	public ArrayList<SpriteVT> sprites;
 	public PlayerVT player;
 	public ArrayList<ZombieVT> entity = new ArrayList<ZombieVT>();
 	public boolean isPaused;
@@ -29,11 +20,40 @@ public class TestFrame extends JPanel implements ActionListener, Serializable
 
 	public TestFrame()
 	{
-		addKeyListener(new TAdapter());
-		setFocusable(true);
-		setBackground(Vars.playerColor.brighter());
-		setDoubleBuffered(true);
-		setSize(400, 600);
+		super(2, 400, 600);
+	}
+
+	public void checkCollisions()
+	{
+		for (SpriteVT spriteA : sprites)
+		{
+			for (SpriteVT spriteB : sprites)
+			{
+				if (!spriteA.equals(spriteB) && spriteA.getBounds().intersects(spriteB.getBounds()))
+				{
+					spriteA.collidedWith(spriteB);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void keyPressed(Keys e)
+	{
+		player.keyPressed(e);
+	}
+
+	@Override
+	public void keyReleased(Keys e)
+	{
+		player.keyReleased(e);
+	}
+
+	@Override
+	public void init()
+	{
+		sprites = new ArrayList<SpriteVT>();
+		setBackground(Save.PLAYER_COLOR.brighter());
 
 		player = new PlayerVT(this);
 
@@ -41,29 +61,16 @@ public class TestFrame extends JPanel implements ActionListener, Serializable
 		{
 			levelObj = new Level(this);
 		}
-		CodingMod.instance.startLoading();
-
-		isPlaying = true;
-
-		timer = new Timer(25, this);
-		timer.start();
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e)
+	public void updateGame(int ticks)
 	{
-		System.gc();
-
-		if (!isPlaying)
-		{
-			timer.stop();
-		}
-
 		levelObj.run();
 
-		ArrayList<EntityVT> removes = new ArrayList<EntityVT>();
+		ArrayList<SpriteVT> removes = new ArrayList<SpriteVT>();
 
-		for (EntityVT sprite : sprites)
+		for (SpriteVT sprite : sprites)
 		{
 			if (!sprite.isDestroyed())
 			{
@@ -75,36 +82,17 @@ public class TestFrame extends JPanel implements ActionListener, Serializable
 			}
 		}
 
-		for (EntityVT sprite : removes)
+		for (SpriteVT sprite : removes)
 		{
 			sprites.remove(sprite);
 		}
 
 		checkCollisions();
-		repaint();
-	}
-
-	public void checkCollisions()
-	{
-		for (EntityVT spriteA : sprites)
-		{
-			for (EntityVT spriteB : sprites)
-			{
-				if (!spriteA.equals(spriteB) && spriteA.getBounds().intersects(spriteB.getBounds()))
-				{
-					spriteA.collidedWith(spriteB);
-					// spriteB.collidedWith(spriteA);
-				}
-			}
-		}
 	}
 
 	@Override
-	public void paint(Graphics g)
+	public void drawGameScreen(Graphics2D g2d)
 	{
-		super.paint(g);
-		Graphics2D g2d = (Graphics2D) g;
-
 		if (player.health > 0)
 		{
 			if (isPaused)
@@ -117,7 +105,7 @@ public class TestFrame extends JPanel implements ActionListener, Serializable
 				g2d.setFont(defaultFont);
 			}
 
-			for (EntityVT sprite : sprites)
+			for (SpriteVT sprite : sprites)
 			{
 				sprite.drawSprite(g2d, this);
 			}
@@ -130,33 +118,11 @@ public class TestFrame extends JPanel implements ActionListener, Serializable
 			Font monaco = new Font("Monaco", Font.PLAIN, 24);
 			g2d.setFont(monaco);
 			int toAdd = g2d.getFontMetrics().stringWidth("Game Over") / 2;
-			g2d.drawString("Game Over", 200 - toAdd, 300);
+			int toAdd2 = g2d.getFontMetrics().stringWidth("Press E to Restart") / 2;
+			g2d.drawString("Game Over", 200 - toAdd, 250);
+			g2d.drawString("Press E to Restart", 200 - toAdd2, 300);
 			g2d.setFont(defaultFont);
+			stop();
 		}
-
-		Toolkit.getDefaultToolkit().sync();
-		g.dispose();
-	}
-
-	public class TAdapter extends KeyAdapter
-	{
-		@Override
-		public void keyPressed(KeyEvent e)
-		{
-			player.keyPressed(e);
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e)
-		{
-			player.keyReleased(e);
-		}
-	}
-
-	private int rand = Rand.nextInt();
-
-	public int getRand()
-	{
-		return rand;
 	}
 }

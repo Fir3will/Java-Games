@@ -6,13 +6,14 @@ import java.awt.image.ImageObserver;
 
 public class ShopTS extends SpriteTS
 {
+	private static final long serialVersionUID = 1L;
 	private static int counter = 1;
 
 	private static boolean openShop(int shopID)
 	{
 		ShopTS.openShopDelay++;
 
-		if (ShopTS.openShopDelay >= 500) { return false; }
+		if (ShopTS.openShopDelay >= 500) return false;
 
 		return true;
 	}
@@ -38,15 +39,13 @@ public class ShopTS extends SpriteTS
 	public ShopTS(int X, int Y)
 	{
 		super(X, Y, "/Images/Testing/shop.png");
-		shopID = ShopTS.counter;
-
-		ShopTS.counter++;
+		shopID = ShopTS.counter++;
 	}
 
 	@Override
 	public void drawSprite(Graphics2D g2d, ImageObserver obs)
 	{
-		g2d.drawImage(getImage(), x, y, obs);
+		g2d.drawImage(getImage().getImage(), x, y, obs);
 	}
 
 	public int getShopID()

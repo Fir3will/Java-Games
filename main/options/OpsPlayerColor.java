@@ -14,6 +14,7 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import main.Save;
 import main.Vars;
 
 public class OpsPlayerColor extends OptionBar implements ChangeListener
@@ -29,7 +30,7 @@ public class OpsPlayerColor extends OptionBar implements ChangeListener
 
 		// Set up the banner at the top of the window
 		banner = new JLabel("Your Player's Color Is This, Cancel to save the color!", SwingConstants.CENTER);
-		banner.setForeground(Vars.playerColor.brighter());
+		banner.setForeground(Save.PLAYER_COLOR.brighter());
 		banner.setBackground(Color.blue);
 		banner.setOpaque(true);
 		banner.setFont(new Font("SansSerif", Font.BOLD, 18));
@@ -67,8 +68,8 @@ public class OpsPlayerColor extends OptionBar implements ChangeListener
 	{
 		Color newColor = tcc.getColor();
 		banner.setForeground(newColor);
-		Vars.playerColor = new Color(newColor.getRed(), newColor.getGreen(), newColor.getBlue(), newColor.getAlpha());
-		Vars.playerColor = newColor;
+		Save.PLAYER_COLOR = new Color(newColor.getRed(), newColor.getGreen(), newColor.getBlue(), newColor.getAlpha());
+		Save.PLAYER_COLOR = newColor;
 	}
 
 	@Override

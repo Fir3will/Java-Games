@@ -3,26 +3,22 @@ package testing;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.ImageObserver;
-import main.Vars;
+import main.Save;
 import main.utils.Rand;
+import main.utils.helper.Sound;
 import testing.SkillTS.SkillsTS;
 
 public abstract class LivingSpriteTS extends SpriteTS
 {
-	private int hit = 0;
-	private int attackRate = 150;
-	private int attackDelay = attackRate;
-	private boolean dropsItems = false;
-	private ItemTS[] items = new ItemTS[18];
-	private ItemTS[] inventory = new ItemTS[8];
+	private static final long serialVersionUID = 1L;
+
+	private ItemTS[] items = new ItemTS[18], inventory = new ItemTS[8];
 	private SkillTS[] allSkills;
-	private boolean[] activatedSkill;
-	private boolean canLevel = false;
+	private boolean[] activatedSkill, walkingCycle = new boolean[4];
 	private String name = "[NO-NAME]";
-	private int isFirst = 0;
-	private int forgetDelay = 0;
-	private int walkDelay;
-	private boolean[] walkingCycle = new boolean[4];
+	private int walkDelay, spawnDelay, health, maxHealth, forgetDelay, isFirst, hit, attackRate = 150, attackDelay = 150;
+	private LivingSpriteTS attacker;
+	private boolean isAggressive, isAttacked, canSpawn, canLevel, dropsItems;
 
 	public LivingSpriteTS(int X, int Y, int WIDTH, int HEIGHT, int maxHealth, boolean aggressive)
 	{
@@ -74,7 +70,7 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public void addSpawnDelay(int delay)
 	{
-		getLocker().setIntByteL("Respawn Delay", getSpawnDelay() + delay);
+		spawnDelay += delay;
 	}
 
 	public void addXPToSkill(int index, int xpToAdd)
@@ -94,12 +90,10 @@ public abstract class LivingSpriteTS extends SpriteTS
 		}
 		else
 		{
-			g2d.drawImage(getImage(), x, y, obs);
+			g2d.drawImage(getImage().getImage(), x, y, obs);
 		}
 		if (isAttacked())
 		{
-
-			// if (aggressive)
 			if (isAggressive())
 			{
 				g2d.setColor(Color.RED);
@@ -129,18 +123,13 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public void dropItems()
 	{
-		if (getAttacker() == null)
+		if (getAttacker() == null) return;
+
+		for (int i = 0; i < items.length; i++)
 		{
-			return;
-		}
-		else
-		{
-			for (int i = 0; i < items.length; i++)
+			if (items[i] != null)
 			{
-				if (items[i] != null)
-				{
-					getAttacker().addItemToInventory(items[i]);
-				}
+				getAttacker().addItemToInventory(items[i]);
 			}
 		}
 	}
@@ -149,15 +138,14 @@ public abstract class LivingSpriteTS extends SpriteTS
 	{
 		for (int i = 0; i < allSkills.length; i++)
 		{
-			if (activatedSkill[i]) { return i; }
+			if (activatedSkill[i]) return i;
 		}
 		return 0;
 	}
 
 	public LivingSpriteTS getAttacker()
 	{
-		return (LivingSpriteTS) getLocker().getObjectByteL("Attacker");
-		// return getAttacker();
+		return attacker;
 	}
 
 	public boolean getCanLevel()
@@ -167,12 +155,12 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public boolean getCanSpawn()
 	{
-		return getLocker().getBooleanByteL("Can Spawn");
+		return canSpawn;
 	}
 
 	public int getHealth()
 	{
-		return getLocker().getIntByteL("Health");
+		return health;
 	}
 
 	public ItemTS[] getInv()
@@ -187,7 +175,7 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public int getMaxHealth()
 	{
-		return getLocker().getIntByteL("Max Health");
+		return maxHealth;
 	}
 
 	public SkillTS getSkill(int index)
@@ -197,7 +185,7 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public int getSpawnDelay()
 	{
-		return getLocker().getIntByteL("Respawn Delay");
+		return spawnDelay;
 	}
 
 	public String getSpriteName()
@@ -214,23 +202,21 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public boolean isAggressive()
 	{
-		return getLocker().getBooleanByteL("Aggressive");
+		return isAggressive;
 	}
 
 	public boolean isAttacked()
 	{
-		return getLocker().getBooleanByteL("Attacked");
+		return isAttacked;
 	}
 
 	public void isAttacked(LivingSpriteTS attacker, int isFirst)
 	{
-		int hit = 0;
-		int rand = attacker.getSkill(SkillsTS.ATTACK.getSkillID() - 1).getLevel() - getSkill(SkillsTS.DEFENCE.getSkillID() - 1).getLevel() + 1;
+		int lvlDiff = attacker.getSkill(SkillsTS.ATTACK.getSkillID() - 1).getLevel() - getSkill(SkillsTS.DEFENCE.getSkillID() - 1).getLevel();
 		int rand0 = 100 - attacker.getSkill(1).getLevel();
 		int rand1 = Rand.isPercent(rand0) ? Rand.nextInt(1) : 0;
-		int mult = Vars.difficultyLevel.equals("Hard") ? 6 : Vars.difficultyLevel.equals("Normal") ? 8 : 12;
-
-		hit = rand <= 0 ? rand1 : Rand.nextInt(rand);
+		int mult = Save.DIFFICULTY == 2 ? 6 : Save.DIFFICULTY == 1 ? 8 : 12;
+		int hit = lvlDiff <= 0 ? rand1 : Rand.nextInt(lvlDiff);
 
 		if (attackDelay >= attackRate)
 		{
@@ -238,6 +224,12 @@ public abstract class LivingSpriteTS extends SpriteTS
 			{
 				attacker.addXPToSkill(attacker.getActivatedSkill(), hit * mult);
 			}
+
+			if (hit == 0)
+			{
+				Sound.playSound(Rand.nextBoolean() ? Sound.SWORD_CLASH : Sound.SWORD_SWIPE, false, 0.0F);
+			}
+
 			this.hit = hit;
 			this.isFirst = isFirst;
 			setHealth(getHealth() - hit);
@@ -280,7 +272,6 @@ public abstract class LivingSpriteTS extends SpriteTS
 		{
 			if (isAttacked() && getAttacker() != null)
 			{
-
 				if (getAttacker() instanceof PlayerTS)
 				{
 					((PlayerTS) getAttacker()).setCoins(((PlayerTS) getAttacker()).getCoins() + Rand.nextInt(200));
@@ -298,7 +289,6 @@ public abstract class LivingSpriteTS extends SpriteTS
 				setAttacker(null);
 				setAttacked(false);
 				isFirst = 0;
-				// setHealth(maxHealth);
 				setHealth(getMaxHealth());
 
 				if (!(this instanceof PlayerTS))
@@ -323,18 +313,17 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public void setAggressive(boolean aggressive)
 	{
-		getLocker().setBooleanByteL("Aggressive", aggressive);
+		isAggressive = aggressive;
 	}
 
 	public void setAttacked(boolean a)
 	{
-		getLocker().setBooleanByteL("Attacked", a);
+		isAttacked = a;
 	}
 
 	public void setAttacker(LivingSpriteTS a)
 	{
-		getLocker().setObjectByteL("Attacker", a);
-		// getAttacker() = a;
+		attacker = a;
 	}
 
 	public void setAttackRate(int rate)
@@ -344,7 +333,7 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public void setCanSpawn(boolean canSpawn)
 	{
-		getLocker().setBooleanByteL("Can Spawn", canSpawn);
+		this.canSpawn = canSpawn;
 	}
 
 	public void setDropsItems()
@@ -354,7 +343,7 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public void setHealth(int h)
 	{
-		getLocker().setIntByteL("Health", h);
+		health = h;
 	}
 
 	public void setIsFirst(int isFirst)
@@ -369,7 +358,7 @@ public abstract class LivingSpriteTS extends SpriteTS
 
 	public void setSpawnDelay(int delay)
 	{
-		getLocker().setIntByteL("Respawn Delay", delay);
+		spawnDelay = delay;
 	}
 
 	public void setSpriteName(String name)
@@ -377,15 +366,10 @@ public abstract class LivingSpriteTS extends SpriteTS
 		this.name = name;
 	}
 
-	private void startUp(boolean aggressive, int maxHealth)
+	protected void startUp(boolean aggressive, int maxHealth)
 	{
-		getLocker().addBooleanByte("Aggressive", aggressive);
-		getLocker().addBooleanByte("Attacked", false);
-		getLocker().addIntByte("Health", maxHealth);
-		getLocker().addIntByte("Max Health", maxHealth);
-		getLocker().addObjectByte("Attacker", null);
-		getLocker().addBooleanByte("Can Spawn", false);
-		getLocker().addIntByte("Respawn Delay", 0);
+		isAggressive = aggressive;
+		health = this.maxHealth = maxHealth;
 
 		allSkills = new SkillTS[] {new SkillTS(SkillsTS.ATTACK), new SkillTS(SkillsTS.DEFENCE)};
 		activatedSkill = new boolean[allSkills.length];

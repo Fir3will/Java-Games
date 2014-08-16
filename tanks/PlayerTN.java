@@ -1,11 +1,12 @@
 package tanks;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import main.Vars;
+import main.utils.Keys;
 
 public class PlayerTN extends SpriteTN
 {
+	private static final long serialVersionUID = 1L;
 	private ArrayList<MissileTN> missiles;
 	private int specialStored = 1;
 	public int x1, x2, y1, y2;
@@ -31,7 +32,7 @@ public class PlayerTN extends SpriteTN
 	 */
 	public void addSpecialStored(int specialStored)
 	{
-		this.specialStored += 10;// += specialStored;
+		this.specialStored += 50;// += specialStored;
 	}
 
 	public void fire(EnumFace face, int missileChosen)
@@ -99,6 +100,11 @@ public class PlayerTN extends SpriteTN
 		return missiles;
 	}
 
+	public void setMissiles(ArrayList<MissileTN> missiles)
+	{
+		this.missiles = missiles;
+	}
+
 	/**
 	 * @return the specialStored
 	 */
@@ -107,11 +113,9 @@ public class PlayerTN extends SpriteTN
 		return specialStored;
 	}
 
-	public void keyPressed(KeyEvent e)
+	public void keyPressed(Keys key)
 	{
-		int key = e.getKeyCode();
-
-		if (key == KeyEvent.VK_SPACE)
+		if (key == Keys.KEY_SPACE)
 		{
 			if (Vars.missileChosen != 1 && specialStored >= 1)
 			{
@@ -152,47 +156,47 @@ public class PlayerTN extends SpriteTN
 			}
 		}
 
-		if (key == KeyEvent.VK_LEFT)
+		if (key == Keys.KEY_LEFT)
 		{
 			xV = -1;
 		}
 
-		if (key == KeyEvent.VK_RIGHT)
+		if (key == Keys.KEY_RIGHT)
 		{
 			xV = 1;
 		}
 
-		if (key == KeyEvent.VK_UP)
+		if (key == Keys.KEY_UP)
 		{
 			yV = -1;
 		}
 
-		if (key == KeyEvent.VK_DOWN)
+		if (key == Keys.KEY_DOWN)
 		{
 			yV = 1;
 		}
 
-		if (key == KeyEvent.VK_A)
+		if (key == Keys.KEY_A)
 		{
 			x2++;
 		}
 
-		if (key == KeyEvent.VK_D)
+		if (key == Keys.KEY_D)
 		{
 			x2--;
 		}
 
-		if (key == KeyEvent.VK_W)
+		if (key == Keys.KEY_W)
 		{
 			y2++;
 		}
 
-		if (key == KeyEvent.VK_S)
+		if (key == Keys.KEY_S)
 		{
 			y2--;
 		}
 
-		if (key == KeyEvent.VK_Q)
+		if (key == Keys.KEY_Q)
 		{
 			if (Vars.missileChosen < 5)
 			{
@@ -205,26 +209,24 @@ public class PlayerTN extends SpriteTN
 		}
 	}
 
-	public void keyReleased(KeyEvent e)
+	public void keyReleased(Keys key)
 	{
-		int key = e.getKeyCode();
-
-		if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT)
+		if (key == Keys.KEY_LEFT || key == Keys.KEY_RIGHT)
 		{
 			xV = 0;
 		}
 
-		if (key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN)
+		if (key == Keys.KEY_UP || key == Keys.KEY_DOWN)
 		{
 			yV = 0;
 		}
 
-		if (key == KeyEvent.VK_A || key == KeyEvent.VK_D)
+		if (key == Keys.KEY_A || key == Keys.KEY_D)
 		{
 			x2 = 0;
 		}
 
-		if (key == KeyEvent.VK_W || key == KeyEvent.VK_S)
+		if (key == Keys.KEY_W || key == Keys.KEY_S)
 		{
 			y2 = 0;
 		}
@@ -239,7 +241,7 @@ public class PlayerTN extends SpriteTN
 		if (getHealth() <= 0)
 		{
 			setDestroyed(true);
-			StartTN.inGame = false;
+			Tanks.inGame = false;
 		}
 
 		x1 -= x2;

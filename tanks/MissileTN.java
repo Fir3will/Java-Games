@@ -2,11 +2,10 @@ package tanks;
 
 public class MissileTN extends SpriteTN
 {
+	private static final long serialVersionUID = 1L;
 	private EnumFace face;
 	private int missileState;
 	private SpriteTN sprite;
-	@SuppressWarnings("unused")
-	private int missileCounter = 0;
 	private boolean splitUp = false;
 
 	public MissileTN(SpriteTN sprite, EnumFace face, int missileState)
@@ -207,7 +206,6 @@ public class MissileTN extends SpriteTN
 				xV = -1;
 			}
 		}
-		System.out.println("Distance: " + getLocation().distance(sprite.getLocation()));
 
 		x += xV;
 		y += yV;

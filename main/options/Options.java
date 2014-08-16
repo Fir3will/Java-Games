@@ -40,7 +40,7 @@ public class Options extends JPanel
 
 		addOption(OpsMods.class, "Mods", "All Installed Mods");
 		addOption(OpsPlayerName.class, "Change Player Name", "What do you want the Player's name to be");
-		addOption(OpsDifficultyLevel.class, "Change Difficulty Level", "How difficult the Game is");
+		addOption(OpsGeneral.class, "General Settings", "General settings...");
 		addOption(OpsResetGame.class, "Reset Game", "Reset the Game so that all you do is delete the jar file to get rid of everything!");
 		addOption(OpsCheatCodes.class, "Cheat Codes", "Know any Cheat Codes?, Check here!");
 		addOption(OpsPlayerColor.class, "Change Player Color", "In game Player Color to Be!");

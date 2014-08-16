@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
+import main.Save;
 import main.Vars;
 
 public class OpsPlayerName extends OptionBar implements ActionListener
@@ -30,11 +31,11 @@ public class OpsPlayerName extends OptionBar implements ActionListener
 			}
 			else
 			{
-				Vars.playerName = inputUML.getText();
+				Save.PLAYER_NAME = inputUML.getText();
 				System.out.println("Saving Player Name");
 			}
 
-			System.out.println("Player Name: " + Vars.playerName);
+			System.out.println("Player Name: " + Save.PLAYER_NAME);
 		}
 	}
 
@@ -50,7 +51,7 @@ public class OpsPlayerName extends OptionBar implements ActionListener
 		inputUML = new JTextArea("", 4, 20);
 		inputUML.setLineWrap(true);
 		inputUML.setWrapStyleWord(true);
-		inputUML.setForeground(Vars.playerColor.darker());
+		inputUML.setForeground(Save.PLAYER_COLOR.darker());
 
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(this);
@@ -64,7 +65,7 @@ public class OpsPlayerName extends OptionBar implements ActionListener
 
 		frame.pack();
 		frame.setVisible(true);
-		inputUML.append(Vars.playerName);
+		inputUML.append(Save.PLAYER_NAME);
 		inputUML.setCaretPosition(inputUML.getText().length());
 	}
 

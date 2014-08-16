@@ -2,9 +2,8 @@ package modhandler;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import main.utils.ReaderTag;
+import main.utils.CompoundTag;
 import main.utils.SaveType;
-import main.utils.WriterTag;
 
 public class ModContainer
 {
@@ -106,7 +105,8 @@ public class ModContainer
 	{
 		if (mod.getSave() != null)
 		{
-			mod.getSave().writeToTag(new WriterTag(type));
+			CompoundTag tag = new CompoundTag(mod);
+			mod.getSave().writeToTag(tag);
 		}
 	}
 
@@ -114,7 +114,8 @@ public class ModContainer
 	{
 		if (mod.getSave() != null)
 		{
-			mod.getSave().readFromTag(new ReaderTag(type));
+			CompoundTag tag = new CompoundTag(mod);
+			mod.getSave().readFromTag(tag);
 		}
 	}
 }

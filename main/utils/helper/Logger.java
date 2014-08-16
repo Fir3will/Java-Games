@@ -67,10 +67,6 @@ public class Logger extends PrintStream
 		{
 			super.print(str.substring(2));
 		}
-		else if (str.startsWith("<d>"))
-		{
-			super.print("[" + getPrefix() + "~ DEBUG]: " + str.replaceAll("<d>", ""));
-		}
 		else
 		{
 			super.print("[" + getPrefix() + "]: " + str);

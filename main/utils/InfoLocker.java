@@ -40,7 +40,7 @@ public class InfoLocker
 	{
 		for (int i = 0; i < booleanBytes.length; i++)
 		{
-			if (booleanByteLabel[i].equals(label)) { return booleanBytes[i]; }
+			if (booleanByteLabel[i].equals(label)) return booleanBytes[i];
 		}
 		return false;
 	}
@@ -64,7 +64,7 @@ public class InfoLocker
 	{
 		for (int i = 0; i < intBytes.length; i++)
 		{
-			if (intByteLabel[i].equals(label)) { return intBytes[i]; }
+			if (intByteLabel[i].equals(label)) return intBytes[i];
 		}
 		return 0;
 	}
@@ -88,7 +88,7 @@ public class InfoLocker
 	{
 		for (int i = 0; i < objectBytes.length; i++)
 		{
-			if (objectByteLabel[i].equals(label)) { return objectBytes[i]; }
+			if (objectByteLabel[i].equals(label)) return objectBytes[i];
 		}
 		return 0;
 	}

@@ -2,93 +2,45 @@ package tanks;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import main.Save;
 import main.Vars;
+import main.games.GamePanel;
+import main.games.NewGame;
+import main.utils.CompoundTag;
+import main.utils.Keys;
 import main.utils.Rand;
-import modhandler.EnumGame;
-import modhandler.Importer;
 
-public class StartTN extends JPanel implements ActionListener
+@NewGame(name = "Tanks")
+public class Tanks extends GamePanel
 {
-	/**
-	 * Private Class that is used for the Key Adapter
-	 */
-	private class TAdapter extends KeyAdapter
-	{
-		/**
-		 * Java Default
-		 */
-		@Override
-		public void keyPressed(KeyEvent e)
-		{
-			player.keyPressed(e);
-		}
-
-		/**
-		 * Java Default
-		 */
-		@Override
-		public void keyReleased(KeyEvent e)
-		{
-			player.keyReleased(e);
-		}
-	}
-
 	private static final long serialVersionUID = 1L;
 	public int HEIGHT, WIDTH;
 	public static boolean inGame = false;
 	private PlayerTN player;
 	private int specialWeapon = 0;
-
 	private ArrayList<EnemyTN> enemies;
-
-	private Timer timer;
 	private int score;
 	private boolean scoredHigher = false;
 	private boolean enemiesSpawned = false;
 
-	public StartTN()
+	public Tanks()
 	{
-		addKeyListener(new TAdapter());
-		setFocusable(true);
-		setBackground(Vars.playerColor.brighter().brighter());
-		setDoubleBuffered(true);
-		StartTN.inGame = true;
-		setSize(400, 600);
-
-		player = new PlayerTN(200, 200);
-		enemies = new ArrayList<EnemyTN>();
-
-		Importer.throwGameEvent(EnumGame.Tanks);
-
-		timer = new Timer(25, this);
-		timer.start();
+		super(25, 400, 600);
 	}
 
 	/**
 	 * Implementation Java Default
 	 */
 	@Override
-	public void actionPerformed(ActionEvent e)
+	public void updateGame(int ticks)
 	{
-		System.gc();
-
-		if (!StartTN.inGame)
-		{
-			timer.stop();
-		}
-
 		specialWeapon += 4;
 
 		if (specialWeapon >= 1000)
@@ -148,11 +100,11 @@ public class StartTN extends JPanel implements ActionListener
 			}
 		}
 
-		ArrayList<?> ms = player.getMissiles();
+		ArrayList<MissileTN> ms = player.getMissiles();
 
 		for (int i = 0; i < ms.size(); i++)
 		{
-			SpriteTN m = (SpriteTN) ms.get(i);
+			SpriteTN m = ms.get(i);
 
 			if (!m.isDestroyed())
 			{
@@ -195,7 +147,6 @@ public class StartTN extends JPanel implements ActionListener
 		}
 
 		player.spriteInit();
-		repaint();
 		checkCollisions();
 	}
 
@@ -222,7 +173,7 @@ public class StartTN extends JPanel implements ActionListener
 			{
 				if (enemies.get(i).getBounds().intersects(player.getBounds()))
 				{
-					if (score == Vars.tnMaxScore)
+					if (score == Save.TN_MAX_SCORE)
 					{
 						System.out.println("Scored Higher!");
 						scoredHigher = true;
@@ -230,7 +181,7 @@ public class StartTN extends JPanel implements ActionListener
 
 					if (scoredHigher)
 					{
-						Vars.tnMaxScore = score;
+						Save.TN_MAX_SCORE = score;
 					}
 
 					score++;
@@ -241,7 +192,7 @@ public class StartTN extends JPanel implements ActionListener
 				{
 					if (player.getMissiles().get(d).getBounds().intersects(enemies.get(i).getBounds()) && !player.getMissiles().get(d).isDestroyed())
 					{
-						if (score == Vars.tnMaxScore)
+						if (score == Save.TN_MAX_SCORE)
 						{
 							System.out.println("Scored Higher!");
 							scoredHigher = true;
@@ -249,7 +200,7 @@ public class StartTN extends JPanel implements ActionListener
 
 						if (scoredHigher)
 						{
-							Vars.tnMaxScore = score;
+							Save.TN_MAX_SCORE = score;
 						}
 
 						score++;
@@ -281,16 +232,20 @@ public class StartTN extends JPanel implements ActionListener
 		}
 	}
 
-	/**
-	 * Java Default
-	 */
 	@Override
-	public void paint(Graphics g)
+	public void init()
 	{
-		super.paint(g);
-		Graphics2D g2d = (Graphics2D) g;
+		setBackground(Save.PLAYER_COLOR.brighter().brighter());
+		Tanks.inGame = true;
 
-		if (StartTN.inGame)
+		player = new PlayerTN(200, 200);
+		enemies = new ArrayList<EnemyTN>();
+	}
+
+	@Override
+	public void drawGameScreen(Graphics2D g2d)
+	{
+		if (Tanks.inGame)
 		{
 			ArrayList<?> ms = player.getMissiles();
 
@@ -300,11 +255,11 @@ public class StartTN extends JPanel implements ActionListener
 
 				if (!m.isDestroyed())
 				{
-					g2d.drawImage(m.getImage(), m.getX(), m.getY(), this);
+					g2d.drawImage(m.getImage().getImage(), m.getX(), m.getY(), this);
 				}
 			}
 
-			g2d.drawImage(player.getImage(), player.getX(), player.getY(), this);
+			g2d.drawImage(player.getImage().getImage(), player.getX(), player.getY(), this);
 			g2d.drawString("PLAYER- X: " + player.getX() + ", Y: " + player.getY(), 100, 415);
 			g2d.drawString("Special Weapon Charge: " + specialWeapon, 100, 430);
 			g2d.drawString("X: " + player.x1 + ", Y:" + player.y1, 100, 445);
@@ -318,9 +273,9 @@ public class StartTN extends JPanel implements ActionListener
 
 				if (!e.isDestroyed())
 				{
-					g2d.drawImage(e.getImage(), e.getX(), e.getY(), this);
+					g2d.drawImage(e.getImage().getImage(), e.getX(), e.getY(), this);
 
-					if (e.getHealth() == 3)
+					if (e.getHealth() >= 3)
 					{
 						g2d.setColor(Color.GREEN);
 					}
@@ -342,17 +297,17 @@ public class StartTN extends JPanel implements ActionListener
 
 					if (!m.isDestroyed())
 					{
-						g2d.drawImage(m.getImage(), m.getX(), m.getY(), this);
+						g2d.drawImage(m.getImage().getImage(), m.getX(), m.getY(), this);
 					}
 				}
 			}
 
-			g2d.setColor(Vars.playerColor.darker().darker());
+			g2d.setColor(Save.PLAYER_COLOR.darker().darker());
 			g2d.drawString("(X)", player.x1, player.y1);
 			g2d.drawLine(player.x1, player.y1, player.x, player.y);
 
 			g2d.setColor(Color.BLACK);
-			g2d.drawString(Vars.playerName, player.x, player.y - 5);
+			g2d.drawString(Save.PLAYER_NAME, player.x, player.y - 5);
 			g2d.drawString("Health: " + player.getHealth(), player.x - 10, player.y + 40);
 
 			if (Vars.missileChosen == 1)
@@ -452,8 +407,41 @@ public class StartTN extends JPanel implements ActionListener
 			g2d.setFont(small);
 			g2d.drawString(msg, 50, 300);
 		}
+	}
 
-		Toolkit.getDefaultToolkit().sync();
-		g.dispose();
+	@Override
+	public void keyPressed(Keys key)
+	{
+		player.keyPressed(key);
+	}
+
+	@Override
+	public void keyReleased(Keys key)
+	{
+		player.keyReleased(key);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void loadAfterInit(CompoundTag tag)
+	{
+		player = (PlayerTN) (tag.getSerializable("Player") == null ? new PlayerTN(200, 200) : tag.getSerializable("Player"));
+
+		Serializable[] obj = tag.getSerializableArray("Missiles");
+		if (obj == null) return;
+		player.setMissiles(new ArrayList<MissileTN>((Collection<? extends MissileTN>) Arrays.asList(obj)));
+
+		Serializable[] obj2 = tag.getSerializableArray("Enemies");
+		if (obj2 == null) return;
+		enemies = new ArrayList<EnemyTN>((Collection<? extends EnemyTN>) Arrays.asList(obj2));
+	}
+
+	@Override
+	public void onGameClose(CompoundTag tag)
+	{
+		tag.setSerializable("Player", player);
+
+		tag.setSerializableArray("Enemies", enemies.toArray(new Serializable[0]));
+		tag.setSerializableArray("Missiles", player.getMissiles().toArray(new Serializable[0]));
 	}
 }

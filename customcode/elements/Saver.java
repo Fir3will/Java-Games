@@ -1,20 +1,15 @@
 package customcode.elements;
 
-import main.utils.ReaderTag;
+import main.utils.CompoundTag;
 import main.utils.SaveManager;
-import main.utils.WriterTag;
 
-public class Saver extends SaveManager
+public class Saver implements SaveManager
 {
 	@Override
-	public void readFromTag(ReaderTag tag)
-	{
-		System.err.println("Loading...");
-	}
+	public void readFromTag(CompoundTag tag)
+	{}
 
 	@Override
-	public void writeToTag(WriterTag tag)
-	{
-		System.err.println("Saving...");
-	}
+	public void writeToTag(CompoundTag tag)
+	{}
 }

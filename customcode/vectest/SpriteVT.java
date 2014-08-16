@@ -3,21 +3,21 @@ package customcode.vectest;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import main.utils.math.Vector2F;
 
-public abstract class EntityVT implements Serializable
+public abstract class SpriteVT
 {
 	private static int ID;
 	private int id;
-	public float width, height, x, y, xV, yV;
+	public float width, height, x, y;
+	public float xV, yV;
 	public boolean isDestroyed = false;
 	protected TestFrame main;
 
-	public EntityVT(TestFrame main, int x, int y, int width, int height)
+	public SpriteVT(TestFrame main, int x, int y, int width, int height)
 	{
 		this.width = width;
 		this.height = height;
@@ -94,7 +94,7 @@ public abstract class EntityVT implements Serializable
 
 	public final void moveTo(Vector2F pos, float speed)
 	{
-		speed = 75 / speed;
+		speed = 75.0F / speed;
 		Vector2F us = getLocation();
 		Vector2F them = pos.clone();
 
@@ -106,6 +106,7 @@ public abstract class EntityVT implements Serializable
 		{
 			xV = -(us.clone().setY(0).distance(them.clone().setY(0)) / speed);
 		}
+
 		if (pos.getY() > getY())
 		{
 			yV = us.clone().setX(0).distance(them.clone().setX(0)) / speed;
@@ -116,11 +117,11 @@ public abstract class EntityVT implements Serializable
 		}
 	}
 
-	public final EntityVT getClosestTo(Class<? extends EntityVT> clazz)
+	public final SpriteVT getClosestTo(Class<? extends SpriteVT> clazz)
 	{
-		HashMap<Float, EntityVT> map = new HashMap<Float, EntityVT>();
+		HashMap<Float, SpriteVT> map = new HashMap<Float, SpriteVT>();
 
-		for (EntityVT sprite : main.sprites)
+		for (SpriteVT sprite : main.sprites)
 		{
 			if (sprite.getClass().equals(clazz))
 			{
@@ -128,13 +129,13 @@ public abstract class EntityVT implements Serializable
 			}
 		}
 
-		Iterator<Entry<Float, EntityVT>> iterator = map.entrySet().iterator();
+		Iterator<Entry<Float, SpriteVT>> iterator = map.entrySet().iterator();
 		float min = Float.MAX_VALUE;
-		EntityVT minS = null;
+		SpriteVT minS = null;
 
 		while (iterator.hasNext())
 		{
-			Entry<Float, EntityVT> entry = iterator.next();
+			Entry<Float, SpriteVT> entry = iterator.next();
 
 			if (entry.getKey() < min)
 			{
@@ -151,14 +152,14 @@ public abstract class EntityVT implements Serializable
 		return vec.distance(getLocation());
 	}
 
-	public final void moveTo(EntityVT sprite, float speed)
+	public final void moveTo(SpriteVT sprite, float speed)
 	{
 		if (this.equals(sprite)) return;
 
 		moveTo(sprite.getLocation(), speed);
 	}
 
-	public void collidedWith(EntityVT sprite)
+	public void collidedWith(SpriteVT sprite)
 	{
 
 	}
@@ -170,7 +171,7 @@ public abstract class EntityVT implements Serializable
 	@Override
 	public boolean equals(Object o)
 	{
-		if (!(o instanceof EntityVT)) return false;
+		if (!(o instanceof SpriteVT)) return false;
 		if (this == o || hashCode() == o.hashCode()) return true;
 
 		return false;
@@ -184,6 +185,4 @@ public abstract class EntityVT implements Serializable
 	{
 		return id;
 	}
-
-	private static final long serialVersionUID = 1L;
 }

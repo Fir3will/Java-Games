@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
+import main.Save;
 import main.Vars;
 
 public class OpsStatistics extends OptionBar
@@ -26,12 +27,8 @@ public class OpsStatistics extends OptionBar
 		credits = new JTextArea(5, 50);
 		credits.setEditable(false);
 		credits.setForeground(Color.BLUE);
-		credits.setBorder(BorderFactory.createTitledBorder("Statistics for \"" + Vars.playerName + "\""));
-		credits.append("Space Invaders Max Round: " + Vars.siMaxRound + "\n");
-		credits.append("Snake Max Score: " + Vars.snMaxScore + "\n");
-		credits.append("Tanks Max Score: " + Vars.tnMaxScore + "\n");
-		credits.append("Popous Pelican Max Score: " + Vars.ppMaxScore + "\n");
-		credits.append("* Coins: " + Vars.tsCoins + "\n");
+		credits.setBorder(BorderFactory.createTitledBorder("Statistics for: " + Save.PLAYER_NAME));
+		credits.append("Tanks Max Score: " + Save.TN_MAX_SCORE + "\n");
 
 		frame.add(new JScrollPane(credits));
 

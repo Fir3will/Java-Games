@@ -149,14 +149,14 @@ public class JavaFileHelper
 	 * @param jarFile Where the jar is
 	 * @param directory Where to send to
 	 */
-	public static void unjar(File jarfile, File directory)
+	public static void unjar(File jarFile, File directory)
 	{
-		JarFile zfile;
+		JarFile jfile;
 		try
 		{
-			zfile = new JarFile(jarfile);
+			jfile = new JarFile(jarFile);
 
-			Enumeration<? extends JarEntry> entries = zfile.entries();
+			Enumeration<? extends JarEntry> entries = jfile.entries();
 
 			while (entries.hasMoreElements())
 			{
@@ -169,7 +169,7 @@ public class JavaFileHelper
 				else
 				{
 					file.getParentFile().mkdirs();
-					InputStream in = zfile.getInputStream(entry);
+					InputStream in = jfile.getInputStream(entry);
 					try
 					{
 						copy(in, file);
@@ -400,7 +400,7 @@ public class JavaFileHelper
 	 * Returns a Class from the given jarfile path
 	 * 
 	 * <p>
-	 * <b>WARNING</b> VERY IFFY!
+	 * <b><i>WARNING VERY IFFY!</i></b>
 	 * 
 	 * @param lol The JarFile path
 	 * @return a class object of the class file...
@@ -443,11 +443,21 @@ public class JavaFileHelper
 		return null;
 	}
 
+	/**
+	 * Gets the Calling Class
+	 * 
+	 * @return The Class that called this Method
+	 */
 	public static Class<?> classThatCalled()
 	{
 		return classThatCalledAt(2);
 	}
 
+	/**
+	 * Gets the Class <code>levels</code> before this was called
+	 * 
+	 * @return The Class that called at the level
+	 */
 	public static Class<?> classThatCalledAt(int level)
 	{
 		try
@@ -461,13 +471,58 @@ public class JavaFileHelper
 		return null;
 	}
 
+	/**
+	 * Gets the Method Name <code>levels</code> before this was called
+	 * 
+	 * @return The Class that called at the level
+	 */
 	public static String methodNameThatCalled()
 	{
 		return methodNameThatCalledAt(2);
 	}
 
+	/**
+	 * Gets the Calling Method Name
+	 * 
+	 * @return The Method Name that called this Method
+	 */
 	public static String methodNameThatCalledAt(int level)
 	{
 		return new RuntimeException().getStackTrace()[level].getMethodName();
+	}
+
+	/**
+	 * Retrieve the file at the website and copies it to the given file
+	 * 
+	 * @param website the website where the file is
+	 * @param saveTo where the downloaded file will be held!
+	 */
+	public static void saveOnlineFile(String website, File saveTo)
+	{
+		try
+		{
+			InputStream in = new URL(website).openConnection().getInputStream();
+			FileOutputStream fos = new FileOutputStream(saveTo);
+			byte[] buf = new byte[512];
+			while (true)
+			{
+				int len = in.read(buf);
+
+				if (len == -1)
+				{
+					break;
+				}
+				fos.write(buf, 0, len);
+			}
+			in.close();
+			fos.close();
+		}
+		catch (IOException e)
+		{
+			System.err.println("Error Saving Online File!");
+			System.err.println("File: " + saveTo.toString());
+			System.err.println("Website: " + website);
+			e.printStackTrace();
+		}
 	}
 }

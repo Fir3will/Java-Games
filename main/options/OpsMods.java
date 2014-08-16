@@ -39,7 +39,7 @@ public class OpsMods extends OptionBar
 			{
 				if (lsm.isSelectedIndex(i))
 				{
-					mod = Importer.mods.toArray(new SimpleMod[0])[i];
+					mod = Importer.mods.get(i);
 					output.setText("Modid: " + mod.getModid() + "\nVersion: " + mod.getVersion() + "\nDisabled: " + mod.isDisabled());
 				}
 			}
@@ -54,6 +54,7 @@ public class OpsMods extends OptionBar
 	public ListSelectionModel listSelectionModel;
 	public JPanel panel;
 	public SimpleMod mod;
+	public JButton disable;
 
 	@Override
 	public void initBar()
@@ -72,8 +73,7 @@ public class OpsMods extends OptionBar
 		output.setEditable(false);
 		JScrollPane outputPane = new JScrollPane(output, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		JButton disable = new JButton("Disable Mod");
-		disable.setEnabled(false);
+		disable = new JButton("Disable Mod");
 		disable.addActionListener(new ActionListener()
 		{
 			@Override
@@ -119,5 +119,10 @@ public class OpsMods extends OptionBar
 
 	@Override
 	public void performEvent(ActionEvent e)
-	{}
+	{
+		if (mod != null)
+		{
+			disable.setText((mod.isDisabled() ? "Enable" : "Disable") + " Mod");
+		}
+	}
 }

@@ -5,6 +5,25 @@ import java.awt.image.ImageObserver;
 
 public class ObstacleTS extends SpriteTS
 {
+	private static final long serialVersionUID = 1L;
+
+	public ObstacleTS(int x, int y)
+	{
+		super(x, y, "/Images/Testing/wall2.png");
+	}
+
+	@Override
+	public void drawSprite(Graphics2D g2d, ImageObserver obs)
+	{
+		g2d.drawImage(getImage().getImage(), x, y, obs);
+	}
+
+	@Override
+	public void run()
+	{
+
+	}
+
 	public static void cannotCollide(SpriteTS wall, SpriteTS entity)
 	{
 		if (wall.x > entity.x)
@@ -27,22 +46,5 @@ public class ObstacleTS extends SpriteTS
 			entity.yV = 0;
 			entity.y += 1;
 		}
-	}
-
-	public ObstacleTS(int X, int Y)
-	{
-		super(X, Y, "/Images/Testing/wall2.png");
-	}
-
-	@Override
-	public void drawSprite(Graphics2D g2d, ImageObserver obs)
-	{
-		g2d.drawImage(getImage(), x, y, obs);
-	}
-
-	@Override
-	public void run()
-	{
-
 	}
 }

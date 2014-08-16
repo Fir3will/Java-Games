@@ -9,7 +9,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,85 +20,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
-import main.Vars;
+import main.Save;
 import main.games.GamePanel;
+import main.games.NewGame;
+import main.utils.CompoundTag;
 import testing.SkillTS.SkillsTS;
 
-public class Testing extends GamePanel implements KeyListener
+@NewGame(name = "RPG Game")
+public class RPG extends GamePanel implements KeyListener
 {
-	private class AC implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			String c = e.getActionCommand();
-
-			if ("1".equals(c))
-			{
-				if (player.getInv()[0] != null && player.getInv()[0].activatedItem(player, player.getInv()[0].itemID))
-				{
-					player.getInv()[0] = null;
-				}
-			}
-
-			if ("2".equals(c))
-			{
-				if (player.getInv()[1] != null && player.getInv()[1].activatedItem(player, player.getInv()[1].itemID))
-				{
-					player.getInv()[1] = null;
-				}
-			}
-
-			if ("3".equals(c))
-			{
-				if (player.getInv()[2] != null && player.getInv()[2].activatedItem(player, player.getInv()[2].itemID))
-				{
-					player.getInv()[2] = null;
-				}
-			}
-
-			if ("4".equals(c))
-			{
-				if (player.getInv()[3] != null && player.getInv()[3].activatedItem(player, player.getInv()[3].itemID))
-				{
-					player.getInv()[3] = null;
-				}
-			}
-
-			if ("5".equals(c))
-			{
-				if (player.getInv()[4] != null && player.getInv()[4].activatedItem(player, player.getInv()[4].itemID))
-				{
-					player.getInv()[4] = null;
-				}
-			}
-
-			if ("6".equals(c))
-			{
-				if (player.getInv()[5] != null && player.getInv()[5].activatedItem(player, player.getInv()[5].itemID))
-				{
-					player.getInv()[5] = null;
-				}
-			}
-
-			if ("7".equals(c))
-			{
-				if (player.getInv()[6] != null && player.getInv()[6].activatedItem(player, player.getInv()[6].itemID))
-				{
-					player.getInv()[6] = null;
-				}
-			}
-
-			if ("8".equals(c))
-			{
-				if (player.getInv()[7] != null && player.getInv()[7].activatedItem(player, player.getInv()[7].itemID))
-				{
-					player.getInv()[7] = null;
-				}
-			}
-		}
-	}
-
 	private static final long serialVersionUID = 1L;
 	private boolean inGame = true;
 	public static ArrayList<SpriteTS> sprites;
@@ -114,9 +47,9 @@ public class Testing extends GamePanel implements KeyListener
 	public static JTextField chatBox;
 	private JButton[] slots;
 
-	public Testing()
+	public RPG()
 	{
-		super(10, 800, 600);
+		super(0, 800, 600);
 	}
 
 	private void checkCollisions()
@@ -194,6 +127,10 @@ public class Testing extends GamePanel implements KeyListener
 
 	public void initSprites()
 	{
+		enemies = new EnemyTS[] {new EnemyTS(100, 100), new EnemyTS(200, 100), new EnemyTS(300, 100), new EnemyTS(410, 100), new EnemyTS(100, 200), new EnemyTS(100, 300), new EnemyTS(100, 410)};
+		shops = new ShopTS[] {new ShopTS(600, 600)};
+		obstacles = new ObstacleTS[] {new ObstacleTS(100, 100), new ObstacleTS(404, 201)};
+
 		for (int i = 0; i < obstacles.length; i++)
 		{
 			sprites.add(obstacles[i]);
@@ -206,8 +143,9 @@ public class Testing extends GamePanel implements KeyListener
 		{
 			sprites.add(enemies[i]);
 		}
-		sprites.add(new CrateTS());
-		sprites.add(player);
+		sprites.add(new CrateTS(500, 500));
+		sprites.add(player = new PlayerTS());
+
 	}
 
 	@Override
@@ -219,7 +157,7 @@ public class Testing extends GamePanel implements KeyListener
 		{
 			if (key == KeyEvent.VK_ENTER)
 			{
-				chat.append(Vars.playerName + ": " + chatBox.getText() + "\n");
+				chat.append(Save.PLAYER_NAME + ": " + chatBox.getText() + "\n");
 				player.processCommand(chatBox.getText());
 				chatBox.setText("");
 			}
@@ -291,9 +229,20 @@ public class Testing extends GamePanel implements KeyListener
 
 		for (int i = 0; i < slots.length; i++)
 		{
+			final int l = i;
 			slots[i] = new JButton("Slot " + (i + 1));
 			slots[i].setActionCommand("" + (i + 1));
-			slots[i].addActionListener(new AC());
+			slots[i].addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					if (player.getInv()[l] != null && player.getInv()[l].activatedItem(player, l))
+					{
+						player.getInv()[l] = null;
+					}
+				}
+			});
 
 			slots[i].addKeyListener(this);
 			add(slots[i]);
@@ -302,11 +251,9 @@ public class Testing extends GamePanel implements KeyListener
 		add(chatBox);
 
 		sprites = new ArrayList<SpriteTS>();
-		player = new PlayerTS();
 
-		enemies = new EnemyTS[] {new EnemyTS(100, 100, 3), new EnemyTS(200, 100, 3), new EnemyTS(300, 100, 3), new EnemyTS(410, 100, 3), new EnemyTS(100, 200, 3), new EnemyTS(100, 300, 3), new EnemyTS(100, 410, 3)};
-		shops = new ShopTS[] {new ShopTS(600, 600)};
-		obstacles = new ObstacleTS[] {new ObstacleTS(100, 100), new ObstacleTS(404, 201)};
+		initSprites();
+
 		shopOpened = new boolean[shops.length];
 
 		enemyRespawn = new boolean[enemies.length];
@@ -321,8 +268,6 @@ public class Testing extends GamePanel implements KeyListener
 		{
 			shopOpened[i] = false;
 		}
-
-		initSprites();
 	}
 
 	@Override
@@ -332,14 +277,17 @@ public class Testing extends GamePanel implements KeyListener
 		{
 			if (sprites.get(i) != null && sprites.get(i).isDestroyed() && sprites.get(i) instanceof LivingSpriteTS)
 			{
-				if (((LivingSpriteTS) sprites.get(i)).getCanSpawn())
-				{
-					((LivingSpriteTS) sprites.get(i)).addSpawnDelay(1);
+				LivingSpriteTS sp = (LivingSpriteTS) sprites.get(i);
 
-					if (((LivingSpriteTS) sprites.get(i)).getSpawnDelay() >= 500)
+				if (sp.getCanSpawn())
+				{
+					sp.addSpawnDelay(1);
+
+					if (sp.getSpawnDelay() >= 500)
 					{
-						SpriteTS spawn = ((LivingSpriteTS) sprites.get(i)).newClone();
-						sprites.add(spawn);
+						SpriteTS spawn = sp.newClone();
+						sp.setSpawnDelay(0);
+						sprites.set(i, spawn);
 					}
 				}
 			}
@@ -485,9 +433,18 @@ public class Testing extends GamePanel implements KeyListener
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public String getGameName()
+	public void loadAfterInit(CompoundTag tag)
 	{
-		return "*";
+		Serializable[] obj = tag.getSerializableArray("Sprites");
+		if (obj == null) return;
+		sprites = new ArrayList<SpriteTS>((Collection<? extends SpriteTS>) Arrays.asList(obj));
+	}
+
+	@Override
+	public void onGameClose(CompoundTag tag)
+	{
+		tag.setSerializableArray("Sprites", sprites.toArray(new SpriteTS[0]));
 	}
 }

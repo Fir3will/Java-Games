@@ -34,20 +34,19 @@ public class Main
 				System.out.println("Current Directory: " + System.getProperty("user.dir"));
 
 				Runtime.getRuntime().addShutdownHook(new ShutdownHook());
-				System.out.println("Launching Game");
-				FileHelper.createFile(Vars.extension, true);
-				FileHelper.createFile(Vars.extension + "mods", true);
-				FileHelper.createFile(Vars.extension + "natives", true);
-				FileHelper.createFile(Vars.extension + "saves", true);
+				System.out.println("Launching...");
+				FileHelper.createFile(Vars.HOME_DIR, true);
+				FileHelper.createFile(Vars.HOME_DIR + "mods", true);
+				FileHelper.createFile(Vars.HOME_DIR + "natives", true);
+				FileHelper.createFile(Vars.HOME_DIR + "saves", true);
 
 				try
 				{
-					System.out.println("Loading All Mods");
-					Files.walkFileTree(new File(Vars.extension + "mods").toPath(), new FVisitor());
+					Files.walkFileTree(new File(Vars.HOME_DIR + "mods").toPath(), new FVisitor());
 				}
 				catch (IOException e)
 				{
-					System.err.println("Error Loading Files in " + new File(Vars.extension + "mods").toPath());
+					System.err.println("Error Loading Files in " + new File(Vars.HOME_DIR + "mods").toString());
 					e.printStackTrace();
 				}
 
@@ -67,15 +66,15 @@ public class Main
 
 	private static void setupMainFile()
 	{
-		Main.mainFile = Vars.extension + "Main.txt";
-		FileHelper.createFile(Vars.extension, true);
-		FileHelper.createFile(Vars.extension + "Documents", true);
+		Main.mainFile = Vars.HOME_DIR + "Main.txt";
+		FileHelper.createFile(Vars.HOME_DIR, true);
+		FileHelper.createFile(Vars.HOME_DIR + "Documents", true);
 		FileHelper.resetFile(Main.mainFile);
 
 		mainFile("Accounts: ");
 
 		int counter = 0;
-		File[] files = Paths.get(Vars.extension).toFile().listFiles();
+		File[] files = Paths.get(Vars.HOME_DIR).toFile().listFiles();
 
 		for (int i = 0; i < files.length; i++)
 		{

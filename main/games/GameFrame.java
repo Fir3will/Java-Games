@@ -4,6 +4,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
+import main.utils.CompoundTag;
 
 public class GameFrame extends JFrame
 {
@@ -13,12 +14,13 @@ public class GameFrame extends JFrame
 	public GameFrame(GamePanel game, int width, int height)
 	{
 		this.game = game;
+		game.parent = this;
 		add(game);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setSize(width, height);
 		addWindowListener(wl);
 		setLocationRelativeTo(null);
-		setTitle(game.getGameName());
+		setTitle(game.getClass().isAnnotationPresent(NewGame.class) ? game.getClass().getAnnotation(NewGame.class).name() : "NULL");
 		setResizable(false);
 		setVisible(true);
 	}
@@ -27,14 +29,13 @@ public class GameFrame extends JFrame
 	{
 		@Override
 		public void windowOpened(WindowEvent e)
-		{
-			game.setVisible(true);
-			game.start();
-		}
+		{}
 
 		@Override
 		public void windowClosed(WindowEvent e)
 		{
+			System.out.println("Closed");
+			game.onGameClose(new CompoundTag(game));
 			game.setVisible(false);
 			game.stop();
 		}

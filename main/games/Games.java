@@ -13,17 +13,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import main.Save;
 import main.Vars;
 import main.options.Options;
+import main.utils.helper.Sound;
 import modhandler.Importer;
-import popouspelican.PopousPelicanPP;
-import puzzle.PuzzleP;
-import snake.SnakeSN;
-import spaceinvaders.LaunchSI;
-import tanks.TanksTN;
-import testing.Testing;
-import tetris.Tetris;
-import breakout.BreakOutBO;
+import tanks.Tanks;
+import testing.RPG;
 
 public class Games extends JPanel implements ActionListener
 {
@@ -32,7 +28,7 @@ public class Games extends JPanel implements ActionListener
 	public static void openLauncher()
 	{
 		Games contentPane = new Games();
-		Vars.frame = new JFrame("Games! |" + Vars.playerName.toUpperCase() + "|");
+		Vars.frame = new JFrame("Games! |" + Save.PLAYER_NAME.toUpperCase() + "|");
 
 		Vars.frames.add(Vars.frame);
 
@@ -45,7 +41,7 @@ public class Games extends JPanel implements ActionListener
 		Vars.frame.setVisible(true);
 	}
 
-	private JButton options, spaceInvaders, puzzle, snake, breakOut, tanks, popousPelican;
+	private JButton options;
 	private static ArrayList<JButton> customTopButtons = new ArrayList<JButton>();
 	private static ArrayList<JButton> customBottomButtons = new ArrayList<JButton>();
 	private static ArrayList<JButton> thirdRow = new ArrayList<JButton>();
@@ -57,64 +53,22 @@ public class Games extends JPanel implements ActionListener
 	{
 		super(new BorderLayout());
 
-		addGame(Testing.class, 800, 600);
-		addGame(Tetris.class, 100, 220);
+		addGame(RPG.class, 800, 600);
+		addGame(Tanks.class, 400, 600);
 
-		setBackground(Vars.playerColor);
+		setBackground(Save.PLAYER_COLOR);
 
 		JPanel topRow = new JPanel();
-		topRow.setBackground(Vars.playerColor);
+		topRow.setBackground(Save.PLAYER_COLOR);
 		topRow.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
 		JPanel bottomRow = new JPanel();
-		bottomRow.setBackground(Vars.playerColor);
+		bottomRow.setBackground(Save.PLAYER_COLOR);
 		bottomRow.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
 
 		for (int i = 0; i < Importer.modContainers.size(); i++)
 		{
 			Importer.modContainers.get(i).initiateProxyMethod("onGamesMenuStartup", this);
 		}
-
-		spaceInvaders = new JButton("Space Invaders");
-		spaceInvaders.addActionListener(this);
-		spaceInvaders.setMnemonic(KeyEvent.VK_I);
-		spaceInvaders.setActionCommand("spaceInvaders");
-		spaceInvaders.setToolTipText("2D Alien Shooter");
-		spaceInvaders.setVisible(true);
-
-		puzzle = new JButton("Puzzle");
-		puzzle.addActionListener(this);
-		puzzle.setMnemonic(KeyEvent.VK_P);
-		puzzle.setActionCommand("puzzle");
-		puzzle.setToolTipText("2D Picture Slide Puzzle");
-		puzzle.setVisible(true);
-
-		snake = new JButton("Snake");
-		snake.addActionListener(this);
-		snake.setMnemonic(KeyEvent.VK_S);
-		snake.setActionCommand("snake");
-		snake.setToolTipText("2D Collection/Point Rack up");
-		snake.setVisible(true);
-
-		breakOut = new JButton("Break Out");
-		breakOut.addActionListener(this);
-		breakOut.setMnemonic(KeyEvent.VK_B);
-		breakOut.setActionCommand("breakOut");
-		breakOut.setToolTipText("2D Wall Remover");
-		breakOut.setVisible(true);
-
-		tanks = new JButton("Tanks");
-		tanks.addActionListener(this);
-		tanks.setMnemonic(KeyEvent.VK_T);
-		tanks.setActionCommand("tanks");
-		tanks.setToolTipText("2D Bird's Eye Shooter");
-		tanks.setVisible(true);
-
-		popousPelican = new JButton("Popous Pelican");
-		popousPelican.addActionListener(this);
-		popousPelican.setMnemonic(KeyEvent.VK_P);
-		popousPelican.setActionCommand("popousPelican");
-		popousPelican.setToolTipText("2D Coordination Shifter");
-		popousPelican.setVisible(true);
 
 		options = new JButton("Options");
 		options.addActionListener(this);
@@ -135,12 +89,6 @@ public class Games extends JPanel implements ActionListener
 		add(title, BorderLayout.NORTH);
 
 		topRow.add(options);
-		topRow.add(tanks);
-		topRow.add(breakOut);
-		topRow.add(snake);
-		bottomRow.add(puzzle, BorderLayout.NORTH);
-		bottomRow.add(spaceInvaders, BorderLayout.NORTH);
-		bottomRow.add(popousPelican, BorderLayout.NORTH);
 
 		for (int i = 0; i < customTopButtons.size(); i++)
 		{
@@ -161,36 +109,6 @@ public class Games extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		if ("spaceInvaders".equals(e.getActionCommand()))
-		{
-			System.out.println("Launching Space Invaders");
-			Vars.frames.add(new LaunchSI());
-		}
-		if ("puzzle".equals(e.getActionCommand()))
-		{
-			System.out.println("Launching Puzzle");
-			Vars.frames.add(new PuzzleP());
-		}
-		if ("snake".equals(e.getActionCommand()))
-		{
-			System.out.println("Launching Snake");
-			Vars.frames.add(new SnakeSN());
-		}
-		if ("popousPelican".equals(e.getActionCommand()))
-		{
-			System.out.println("Launching Popous Pelican");
-			Vars.frames.add(new PopousPelicanPP());
-		}
-		if ("breakOut".equals(e.getActionCommand()))
-		{
-			System.out.println("Launching Break Out");
-			Vars.frames.add(new BreakOutBO());
-		}
-		if ("tanks".equals(e.getActionCommand()))
-		{
-			System.out.println("Launching Tanks");
-			Vars.frames.add(new TanksTN());
-		}
 		if ("options".equals(e.getActionCommand()))
 		{
 			System.out.println("Launching Options");
@@ -202,26 +120,35 @@ public class Games extends JPanel implements ActionListener
 
 	public void addGame(final Class<? extends GamePanel> clazz, final int width, final int height)
 	{
+		if (!clazz.isAnnotationPresent(NewGame.class))
+		{
+			System.err.println(clazz.getSimpleName() + " does not have @Props annotation! Skipping Game");
+			return;
+		}
+
+		final String gameName = clazz.getAnnotation(NewGame.class).name();
+
 		for (Class<? extends GamePanel> game : games)
 		{
 			if (game.equals(clazz))
 			{
-				System.err.println("Game already added: " + clazz.getSimpleName() + ", Skipping...");
+				System.err.println("Game already added: " + gameName + ", Skipping...");
 				return;
 			}
 		}
 
 		isEven = !isEven;
 		games.add(clazz);
-		JButton button = new JButton(clazz.getSimpleName());
+		JButton button = new JButton(gameName);
 		button.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				System.out.println("Launching " + clazz.getSimpleName());
+				System.out.println("Launching " + gameName);
 				try
 				{
+					Sound.playSound(Sound.BUTTON_CLICK, false, 0.0F);
 					Vars.frames.add(new GameFrame(clazz.newInstance(), width, height));
 				}
 				catch (InstantiationException | IllegalAccessException e1)
@@ -231,7 +158,7 @@ public class Games extends JPanel implements ActionListener
 			}
 		});
 
-		if (customTopButtons.size() > 10 && customBottomButtons.size() > 10)
+		if (customTopButtons.size() < 10 && customBottomButtons.size() < 10)
 		{
 			if (isEven)
 			{
@@ -246,7 +173,21 @@ public class Games extends JPanel implements ActionListener
 		{
 			thirdRow.add(button);
 		}
+		buttons.add(button);
+	}
+
+	public static void startGame(String buttonName)
+	{
+		for (JButton b : buttons)
+		{
+			if (b.getText().equals(buttonName))
+			{
+				b.doClick();
+				return;
+			}
+		}
 	}
 
 	private static final ArrayList<Class<? extends GamePanel>> games = new ArrayList<Class<? extends GamePanel>>();
+	private static final ArrayList<JButton> buttons = new ArrayList<JButton>();
 }
