@@ -8,30 +8,9 @@ import java.util.Date;
 
 public class Logger extends PrintStream
 {
-	private class SimpleTimer
-	{
-		private long cachedTime;
-
-		public SimpleTimer()
-		{
-			reset();
-		}
-
-		public long elapsed()
-		{
-			return System.currentTimeMillis() - cachedTime;
-		}
-
-		public void reset()
-		{
-			cachedTime = System.currentTimeMillis();
-		}
-	}
-
-	private DateFormat dateFormat = new SimpleDateFormat();
+	private final DateFormat dateFormat = new SimpleDateFormat();
 	private Date cachedDate = new Date();
-
-	private SimpleTimer refreshTimer = new SimpleTimer();
+	private final SimpleTimer refreshTimer = new SimpleTimer();
 
 	public Logger(PrintStream out)
 	{

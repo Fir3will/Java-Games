@@ -1,17 +1,19 @@
 package main.utils.math;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.Serializable;
+import main.saving.DataTag;
+import main.saving.Savable;
 import main.utils.file.JavaFileHelper;
 
-public final class Vector2F implements Cloneable, Serializable
+public final class Vector2F implements Cloneable, Savable, Serializable
 {
-	static final long serialVersionUID = 1;
-
 	public static final Vector2F ZERO = new Vector2F(0F, 0F);
 	public static final Vector2F UNIT_XY = new Vector2F(1F, 1F);
+	public static final Vector2F UNIT_X = new Vector2F(1F, 0);
+	public static final Vector2F UNIT_Y = new Vector2F(0, 1F);
+	public static final Vector2F POSITIVE_INFINITY = new Vector2F(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+	public static final Vector2F NEGATIVE_INFINITY = new Vector2F(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+	public static final Vector2F NaN = new Vector2F(Float.NaN, Float.NaN);
 
 	/**
 	 * the x value of the vector.
@@ -37,6 +39,16 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
+	 * Creates a Vector2F with the given initial values for both x and y.
+	 * 
+	 * @param value the x and y value of this Vector2F
+	 */
+	public Vector2F(float value)
+	{
+		x = y = value;
+	}
+
+	/**
 	 * Creates a Vector2F with x and y set to 0. Equivalent to Vector2F(0,0).
 	 */
 	public Vector2F()
@@ -52,8 +64,8 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public Vector2F(Vector2F vector2F)
 	{
-		this.x = vector2F.x;
-		this.y = vector2F.y;
+		x = vector2F.x;
+		y = vector2F.y;
 	}
 
 	/**
@@ -81,8 +93,8 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public Vector2F set(Vector2F vec)
 	{
-		this.x = vec.x;
-		this.y = vec.y;
+		x = vec.x;
+		y = vec.y;
 		return this;
 	}
 
@@ -127,9 +139,8 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
-	 * <code>addLocal</code> adds the provided values to this vector
-	 * internally, and returns a handle to this vector for easy chaining of
-	 * calls.
+	 * <code>addLocal</code> adds the provided values to this vector internally,
+	 * and returns a handle to this vector for easy chaining of calls.
 	 * 
 	 * @param addX
 	 *            value to add to x
@@ -145,6 +156,18 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
+	 * <code>add</code>
+	 * 
+	 * @param addX
+	 * @param addY
+	 * @return
+	 */
+	public Vector2F add(float addX, float addY)
+	{
+		return new Vector2F(x + addX, y + addY);
+	}
+
+	/**
 	 * <code>add</code> adds this vector by <code>vec</code> and stores the
 	 * result in <code>result</code>.
 	 * 
@@ -156,7 +179,7 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public Vector2F add(Vector2F vec, Vector2F result)
 	{
-		if (null == vec)
+		if (vec == null)
 		{
 			System.err.println("Provided vector is null, null returned. Called By: " + JavaFileHelper.classThatCalledAt(2).getName() + "." + JavaFileHelper.methodNameThatCalledAt(2) + "(...)");
 			return null;
@@ -205,8 +228,8 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public Vector2F interpolate(Vector2F finalVec, float changeAmnt)
 	{
-		this.x = (1 - changeAmnt) * this.x + changeAmnt * finalVec.x;
-		this.y = (1 - changeAmnt) * this.y + changeAmnt * finalVec.y;
+		x = (1 - changeAmnt) * x + changeAmnt * finalVec.x;
+		y = (1 - changeAmnt) * y + changeAmnt * finalVec.y;
 		return this;
 	}
 
@@ -224,8 +247,8 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public Vector2F interpolate(Vector2F beginVec, Vector2F finalVec, float changeAmnt)
 	{
-		this.x = (1 - changeAmnt) * beginVec.x + changeAmnt * finalVec.x;
-		this.y = (1 - changeAmnt) * beginVec.y + changeAmnt * finalVec.y;
+		x = (1 - changeAmnt) * beginVec.x + changeAmnt * finalVec.x;
+		y = (1 - changeAmnt) * beginVec.y + changeAmnt * finalVec.y;
 		return this;
 	}
 
@@ -256,8 +279,8 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
-	 * <code>lengthSquared</code> calculates the squared value of the
-	 * magnitude of the vector.
+	 * <code>lengthSquared</code> calculates the squared value of the magnitude
+	 * of the vector.
 	 * 
 	 * @return the magnitude squared of the vector.
 	 */
@@ -267,39 +290,43 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
-	 * <code>distanceSquared</code> calculates the distance squared between
-	 * this vector and vector v.
-	 *
-	 * @param v the second vector to determine the distance squared.
+	 * <code>distanceSquared</code> calculates the distance squared between this
+	 * vector and vector v.
+	 * 
+	 * @param v
+	 *            the second vector to determine the distance squared.
 	 * @return the distance squared between the two vectors.
 	 */
 	public float distanceSquared(Vector2F v)
 	{
-		double dx = x - v.x;
-		double dy = y - v.y;
+		final double dx = x - v.x;
+		final double dy = y - v.y;
 		return (float) (dx * dx + dy * dy);
 	}
 
 	/**
-	 * <code>distanceSquared</code> calculates the distance squared between
-	 * this vector and vector v.
-	 *
-	 * @param otherX The X coordinate of the v vector
-	 * @param otherY The Y coordinate of the v vector
+	 * <code>distanceSquared</code> calculates the distance squared between this
+	 * vector and vector v.
+	 * 
+	 * @param otherX
+	 *            The X coordinate of the v vector
+	 * @param otherY
+	 *            The Y coordinate of the v vector
 	 * @return the distance squared between the two vectors.
 	 */
 	public float distanceSquared(float otherX, float otherY)
 	{
-		double dx = x - otherX;
-		double dy = y - otherY;
+		final double dx = x - otherX;
+		final double dy = y - otherY;
 		return (float) (dx * dx + dy * dy);
 	}
 
 	/**
 	 * <code>distance</code> calculates the distance between this vector and
 	 * vector v.
-	 *
-	 * @param v the second vector to determine the distance.
+	 * 
+	 * @param v
+	 *            the second vector to determine the distance.
 	 * @return the distance between the two vectors.
 	 */
 	public float distance(Vector2F v)
@@ -321,8 +348,8 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
-	 * <code>multLocal</code> multiplies this vector by a scalar internally,
-	 * and returns a handle to this vector for easy chaining of calls.
+	 * <code>multLocal</code> multiplies this vector by a scalar internally, and
+	 * returns a handle to this vector for easy chaining of calls.
 	 * 
 	 * @param scalar
 	 *            the value to multiply this vector by.
@@ -348,7 +375,7 @@ public final class Vector2F implements Cloneable, Serializable
 	{
 		if (null == vec)
 		{
-			System.err.println("Provided vector is null, null returned. Called By: " + JavaFileHelper.classThatCalledAt(2).getName() + "." + JavaFileHelper.methodNameThatCalledAt(2) + "(...)");
+			System.err.println("Provided vector is null, null returned.");
 			return null;
 		}
 		x *= vec.x;
@@ -393,9 +420,9 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
-	 * <code>divideLocal</code> divides this vector by a scalar internally,
-	 * and returns a handle to this vector for easy chaining of calls. Dividing
-	 * by zero will result in an exception.
+	 * <code>divideLocal</code> divides this vector by a scalar internally, and
+	 * returns a handle to this vector for easy chaining of calls. Dividing by
+	 * zero will result in an exception.
 	 * 
 	 * @param scalar
 	 *            the value to divides this vector by.
@@ -405,6 +432,13 @@ public final class Vector2F implements Cloneable, Serializable
 	{
 		x /= scalar;
 		y /= scalar;
+		return this;
+	}
+
+	public Vector2F divideLocal(Vector2F scalar)
+	{
+		x /= scalar.x;
+		y /= scalar.y;
 		return this;
 	}
 
@@ -494,9 +528,9 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public Vector2F subtractLocal(Vector2F vec)
 	{
-		if (null == vec)
+		if (vec == null)
 		{
-			System.err.println("Provided vector is null, null returned. Called By: " + JavaFileHelper.classThatCalledAt(2).getName() + "." + JavaFileHelper.methodNameThatCalledAt(2) + "(...)");
+			System.err.println("Provided vector is null, null returned");
 			return null;
 		}
 		x -= vec.x;
@@ -505,9 +539,9 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
-	 * <code>subtractLocal</code> subtracts the provided values from this
-	 * vector internally, and returns a handle to this vector for easy chaining
-	 * of calls.
+	 * <code>subtractLocal</code> subtracts the provided values from this vector
+	 * internally, and returns a handle to this vector for easy chaining of
+	 * calls.
 	 * 
 	 * @param valX
 	 *            value to subtract from x
@@ -529,7 +563,7 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public Vector2F normalize()
 	{
-		float length = length();
+		final float length = length();
 		if (length != 0) return divide(length);
 
 		return divide(1);
@@ -543,16 +577,16 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public Vector2F normalizeLocal()
 	{
-		float length = length();
+		final float length = length();
 		if (length != 0) return divideLocal(length);
 
 		return divideLocal(1);
 	}
 
 	/**
-	 * <code>smallestAngleBetween</code> returns (in radians) the minimum
-	 * angle between two vectors. It is assumed that both this vector and the
-	 * given vector are unit vectors (iow, normalized).
+	 * <code>smallestAngleBetween</code> returns (in radians) the minimum angle
+	 * between two vectors. It is assumed that both this vector and the given
+	 * vector are unit vectors (iow, normalized).
 	 * 
 	 * @param otherVector
 	 *            a unit vector to find the angle against
@@ -560,8 +594,8 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public float smallestAngleBetween(Vector2F otherVector)
 	{
-		float dotProduct = dot(otherVector);
-		float angle = FastMath.acos(dotProduct);
+		final float dotProduct = dot(otherVector);
+		final float angle = FastMath.acos(dotProduct);
 		return angle;
 	}
 
@@ -577,7 +611,7 @@ public final class Vector2F implements Cloneable, Serializable
 	 */
 	public float angleBetween(Vector2F otherVector)
 	{
-		float angle = FastMath.atan2(otherVector.y, otherVector.x) - FastMath.atan2(y, x);
+		final float angle = FastMath.atan2(otherVector.y, otherVector.x) - FastMath.atan2(y, x);
 		return angle;
 	}
 
@@ -604,9 +638,10 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
-	 * <code>getAngle</code> returns (in radians) the angle represented by
-	 * this Vector2F as expressed by a conversion from rectangular coordinates (<code>x</code>,&nbsp;<code>y</code>)
-	 * to polar coordinates (r,&nbsp;<i>theta</i>).
+	 * <code>getAngle</code> returns (in radians) the angle represented by this
+	 * Vector2F as expressed by a conversion from rectangular coordinates 
+	 * (<code>x</code>, <code>y</code>) to polar coordinates
+	 * (r, <i>theta</i>).
 	 * 
 	 * @return the angle in radians. [-pi, pi)
 	 */
@@ -625,9 +660,9 @@ public final class Vector2F implements Cloneable, Serializable
 	}
 
 	/**
-	 * <code>hashCode</code> returns a unique code for this vector object
-	 * based on it's values. If two vectors are logically equivalent, they will
-	 * return the same hash code value.
+	 * <code>hashCode</code> returns a unique code for this vector object based
+	 * on it's values. If two vectors are logically equivalent, they will return
+	 * the same hash code value.
 	 * 
 	 * @return the hash code value of this vector.
 	 */
@@ -643,15 +678,7 @@ public final class Vector2F implements Cloneable, Serializable
 	@Override
 	public Vector2F clone()
 	{
-		try
-		{
-			return (Vector2F) super.clone();
-		}
-		catch (CloneNotSupportedException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		return new Vector2F(x, y);
 	}
 
 	/**
@@ -688,7 +715,7 @@ public final class Vector2F implements Cloneable, Serializable
 
 		if (this == o) return true;
 
-		Vector2F comp = (Vector2F) o;
+		final Vector2F comp = (Vector2F) o;
 		if (Float.compare(x, comp.x) != 0) return false;
 		if (Float.compare(y, comp.y) != 0) return false;
 		return true;
@@ -696,8 +723,7 @@ public final class Vector2F implements Cloneable, Serializable
 
 	/**
 	 * <code>toString</code> returns the string representation of this vector
-	 * object. The format of the string is such: com.jme.math.Vector2F
-	 * [X=XX.XXXX, Y=YY.YYYY]
+	 * object. The format of the string is such: (x, y)
 	 * 
 	 * @return the string representation of this vector.
 	 */
@@ -707,44 +733,51 @@ public final class Vector2F implements Cloneable, Serializable
 		return "(" + x + ", " + y + ")";
 	}
 
-	/**
-	 * Used with serialization. Not to be called manually.
-	 * 
-	 * @param in
-	 *            ObjectInput
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @see java.io.Externalizable
-	 */
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
-	{
-		x = in.readFloat();
-		y = in.readFloat();
-	}
-
-	/**
-	 * Used with serialization. Not to be called manually.
-	 * 
-	 * @param out
-	 *            ObjectOutput
-	 * @throws IOException
-	 * @see java.io.Externalizable
-	 */
-	public void writeExternal(ObjectOutput out) throws IOException
-	{
-		out.writeFloat(x);
-		out.writeFloat(y);
-	}
-
-	public void rotateAroundOrigin(float angle, boolean cw)
+	public void rotateAround(float angle, boolean cw)
 	{
 		if (cw)
 		{
 			angle = -angle;
 		}
-		float newX = FastMath.cos(angle) * x - FastMath.sin(angle) * y;
-		float newY = FastMath.sin(angle) * x + FastMath.cos(angle) * y;
+		final float newX = FastMath.cos(angle) * x - FastMath.sin(angle) * y;
+		final float newY = FastMath.sin(angle) * x + FastMath.cos(angle) * y;
 		x = newX;
 		y = newY;
 	}
+
+	public Vector2F rotateAroundOrgin(Vector2F orgin, float angle, boolean cw)
+	{
+		if (cw)
+		{
+			angle = -angle;
+		}
+		final float newX = FastMath.cos(angle) * x - FastMath.sin(angle) * y;
+		final float newY = FastMath.sin(angle) * x + FastMath.cos(angle) * y;
+		final float x = newX + orgin.x;
+		final float y = newY + orgin.y;
+		return new Vector2F(x, y);
+	}
+
+	@Override
+	public void loadFromTag(DataTag tag)
+	{
+		x = tag.getFloat("Vec X", 0.0F);
+		y = tag.getFloat("Vec Y", 0.0F);
+	}
+
+	@Override
+	public void saveToTag(DataTag tag)
+	{
+		tag.setFloat("Vec X", x);
+		tag.setFloat("Vec Y", y);
+	}
+
+	public static Vector2F fromTag(DataTag tag)
+	{
+		Vector2F v = new Vector2F();
+		v.loadFromTag(tag);
+		return v;
+	}
+
+	private static final long serialVersionUID = 1;
 }

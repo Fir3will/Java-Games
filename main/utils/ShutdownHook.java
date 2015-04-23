@@ -4,8 +4,10 @@ import java.io.File;
 import java.nio.file.Files;
 import main.Login;
 import main.Vars;
+import main.events.ShutdownEvent;
 import main.utils.file.FileHelper;
-import modhandler.Importer;
+import modhandler.Loader;
+import modhandler.ModContainer;
 
 public class ShutdownHook extends Thread
 {
@@ -16,22 +18,22 @@ public class ShutdownHook extends Thread
 			@Override
 			public void run()
 			{
-				File natives = new File(Vars.NATIVES_DIR);
+				final File natives = new File(Vars.NATIVES_DIR);
 				if (Files.exists(natives.toPath()))
 				{
 					System.out.println("Deleting Native: " + natives.getPath());
 					FileHelper.deleteDirectory(natives);
 				}
 
-				for (int i = 0; i < Importer.modContainers.size(); i++)
+				Loader.addEventToAll(new ShutdownEvent());
+				for (int i = 0; i < Loader.getContainerList().size(); i++)
 				{
-					Importer.modContainers.get(i).initiateProxyMethod("onShutdown");
+					ModContainer mc = Loader.getContainerList().get(i);
 					if (Login.loggedIn)
 					{
-						CompoundTag tag = new CompoundTag(Importer.mods.get(i));
-						Importer.mods.get(i).getSave().writeToTag(tag);
+						mc.startSaving();
 					}
-					System.out.println("Mod[" + i + "]: " + Importer.mods.get(i));
+					System.out.println("Mod[" + i + "]: " + mc.getModid());
 				}
 
 				if (Vars.save != null)

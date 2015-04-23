@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.WindowConstants;
 import main.Save;
-import main.Vars;
 
 public class OpsGeneral extends OptionBar
 {
@@ -20,7 +19,6 @@ public class OpsGeneral extends OptionBar
 	public void initBar()
 	{
 		frame = new JFrame();
-		Vars.frames.add(frame);
 		frame.setLocationByPlatform(true);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setTitle("General Settings");
@@ -29,25 +27,25 @@ public class OpsGeneral extends OptionBar
 		soundPanel = new JPanel(new BorderLayout());
 		soundPanel.setBorder(BorderFactory.createTitledBorder("Sound Options"));
 
-		ButtonGroup difButtons = new ButtonGroup();
-		JRadioButton normal = new JRadioButton("Normal", Save.DIFFICULTY == 1);
+		final ButtonGroup difButtons = new ButtonGroup();
+		final JRadioButton normal = new JRadioButton("Normal", Save.DIFFICULTY == 1);
 		normal.addActionListener(this);
 		normal.setActionCommand("Normal");
-		JRadioButton easy = new JRadioButton("Easy", Save.DIFFICULTY == 0);
+		final JRadioButton easy = new JRadioButton("Easy", Save.DIFFICULTY == 0);
 		easy.addActionListener(this);
 		easy.setActionCommand("Easy");
-		JRadioButton hard = new JRadioButton("Hard", Save.DIFFICULTY == 2);
+		final JRadioButton hard = new JRadioButton("Hard", Save.DIFFICULTY == 2);
 		hard.addActionListener(this);
 		hard.setActionCommand("Hard");
 		difButtons.add(easy);
 		difButtons.add(normal);
 		difButtons.add(hard);
 
-		ButtonGroup soundButtons = new ButtonGroup();
-		JRadioButton on = new JRadioButton("On", Save.SOUND_ON);
+		final ButtonGroup soundButtons = new ButtonGroup();
+		final JRadioButton on = new JRadioButton("On", Save.SOUND_ON);
 		on.addActionListener(this);
 		on.setActionCommand("On");
-		JRadioButton off = new JRadioButton("Off", !Save.SOUND_ON);
+		final JRadioButton off = new JRadioButton("Off", !Save.SOUND_ON);
 		off.addActionListener(this);
 		off.setActionCommand("Off");
 		soundButtons.add(on);

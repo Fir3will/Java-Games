@@ -19,7 +19,7 @@ public class OpsCheatCodes extends OptionBar implements ActionListener
 	private JTextArea inputUML;
 	private JTextArea cheatConsole;
 	private JButton checkButton;
-	private ArrayList<String> console = new ArrayList<String>();
+	private final ArrayList<String> console = new ArrayList<String>();
 	private int h = 0;
 
 	@Override
@@ -31,8 +31,6 @@ public class OpsCheatCodes extends OptionBar implements ActionListener
 		}
 
 		frame = new JFrame();
-
-		Vars.frames.add(frame);
 
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -71,7 +69,6 @@ public class OpsCheatCodes extends OptionBar implements ActionListener
 			inputUML.setCaretPosition(inputUML.getText().length());
 
 			for (int i = 0; i < Vars.cheats.length; i++)
-			{
 				if (inputUML.getText().equals(Vars.cheats[i]))
 				{
 					if (Vars.cheatsEnabled[i].matches("true"))
@@ -95,7 +92,6 @@ public class OpsCheatCodes extends OptionBar implements ActionListener
 					cheatConsole.setForeground(Color.BLUE);
 					console.add(h, "The word " + inputUML.getText() + " is Not a Cheat. Sorry, Try Again!\n");
 				}
-			}
 			cheatConsole.append("---------------------------------------------------\n");
 			cheatConsole.append(console.get(h));
 			h++;

@@ -12,13 +12,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-import main.Vars;
 
 public class WarningFrame extends JPanel implements ActionListener
 {
 	public static enum ButtonClicked
 	{
-		YES_CLICKED, NO_CLICKED;
+		YES_CLICKED,
+		NO_CLICKED;
 	}
 
 	public static interface WarningAction
@@ -32,12 +32,12 @@ public class WarningFrame extends JPanel implements ActionListener
 
 	private static final long serialVersionUID = 1L;
 	private JFrame frame;
-	private JButton yes, no;
-	private JLabel warning;
+	private final JButton yes, no;
+	private final JLabel warning;
 
-	private WarningAction action;
+	private final WarningAction action;
 
-	private JPanel bottom;
+	private final JPanel bottom;
 
 	public WarningFrame(WarningAction a)
 	{
@@ -97,7 +97,6 @@ public class WarningFrame extends JPanel implements ActionListener
 	public void init()
 	{
 		frame = new JFrame("WARNING");
-		Vars.frames.add(frame);
 		frame.add(this);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setSize(600, 400);

@@ -15,17 +15,16 @@ import main.utils.helper.Utils;
 /**
  * Helper when it comes to files.
  * 
- *<p>	
- *	This Class contains methods that process many 
- *	different operations that help you handle files 
- *	that you might see as a huge obstacle much like
- *	Writing to a file. This is fixed by the method 
- *	{@link #writeToFile(String, String, boolean)}
- *	that writes to the given file for you. Which 
- *	makes life much easier! YAY!
- *
- *<p> The Methods in this class are as follows:
- *
+ * <p>
+ * This Class contains methods that process many different operations that help
+ * you handle files that you might see as a huge obstacle much like Writing to a
+ * file. This is fixed by the method
+ * {@link #writeToFile(String, String, boolean)} that writes to the given file
+ * for you. Which makes life much easier! YAY!
+ * 
+ * <p>
+ * The Methods in this class are as follows:
+ * 
  * <li> {@link #createFile(String)}
  * <li> {@link #createFile(String, boolean)}
  * <li> {@link #deleteDirectory(File)}
@@ -44,7 +43,8 @@ public class FileHelper
 	/**
 	 * Create a file by default (Not a directory)
 	 * 
-	 * @param dir The path for the file
+	 * @param dir
+	 *            The path for the file
 	 * @return True: If the file was created
 	 */
 	public static boolean createFile(String dir)
@@ -55,15 +55,17 @@ public class FileHelper
 	/**
 	 * Create a file or a directory by default
 	 * 
-	 * @param dir The path for the file
-	 * @param isDirectory Is is a directory of a file
+	 * @param dir
+	 *            The path for the file
+	 * @param isDirectory
+	 *            Is is a directory of a file
 	 * @return True: If the file was created
 	 */
 	public static boolean createFile(String dir, boolean isDirectory)
 	{
 		boolean returning = false;
 
-		Path p = Paths.get(dir);
+		final Path p = Paths.get(dir);
 		try
 		{
 			if (Files.exists(p))
@@ -81,7 +83,7 @@ public class FileHelper
 				returning = true;
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			System.err.println("Error Creating File!");
 			System.err.println("Path: " + dir);
@@ -92,20 +94,21 @@ public class FileHelper
 	}
 
 	/**
-	 * Deletes all of the files and directories in the given directory. 
+	 * Deletes all of the files and directories in the given directory.
 	 * 
-	 * @param dir The directory you would like to delete
+	 * @param dir
+	 *            The directory you would like to delete
 	 * @return True: If the Directory and all of it's content were deleted
 	 */
 	public static boolean deleteDirectory(File dir)
 	{
 		if (Utils.isNull(dir, false) || !dir.exists() || !dir.isDirectory()) throw new IllegalArgumentException("'dir' Must exist and Must be a directory!");
 
-		String[] files = dir.list();
+		final String[] files = dir.list();
 
-		for (int i = 0, len = files.length; i < len; i++)
+		for (final String file : files)
 		{
-			File f = new File(dir, files[i]);
+			final File f = new File(dir, file);
 
 			if (f.isDirectory())
 			{
@@ -122,18 +125,19 @@ public class FileHelper
 	/**
 	 * Deletes the given file
 	 * 
-	 * @param fileName The path for the file
+	 * @param fileName
+	 *            The path for the file
 	 * @return True: If the file was successfully deleted
 	 */
 	public static boolean deleteFile(String fileName)
 	{
-		Path p = Paths.get(fileName);
+		final Path p = Paths.get(fileName);
 
 		try
 		{
 			return Files.deleteIfExists(p);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -142,7 +146,7 @@ public class FileHelper
 
 	private static ArrayList<File> files(File dir)
 	{
-		ArrayList<File> files = new ArrayList<File>();
+		final ArrayList<File> files = new ArrayList<File>();
 
 		if (!dir.isDirectory()) throw new IllegalArgumentException("dir Isn't a Directory! " + dir);
 
@@ -161,23 +165,30 @@ public class FileHelper
 	/**
 	 * Retrieves all the lines of a file and neatly puts them into an array!
 	 * 
-	 * @param fileName The path for the file
+	 * @param fileName
+	 *            The path for the file
 	 * @return The Lines of the given file
 	 */
 	public static String[] getFileContents(String fileName)
 	{
-		ArrayList<String> lines = new ArrayList<String>();
+		final ArrayList<String> lines = new ArrayList<String>();
 		String line = "";
-		BufferedReader reader = getFileReader(fileName);
 
 		try
 		{
-			while ((line = reader.readLine()) != null)
+			final BufferedReader reader = Files.newBufferedReader(Paths.get(fileName), Charset.forName("US-ASCII"));
+			while (true)
 			{
-				lines.add(line);
+				line = reader.readLine();
+				if (line != null)
+				{
+					lines.add(line);
+					continue;
+				}
+				break;
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -186,22 +197,27 @@ public class FileHelper
 
 	/**
 	 * Creates a <code>BufferedReader</code> for the given File
-	 * <p><b><i>WARNING:</i></b> CAN STILL, VERY EASILY CAUSE AN {@link IOException}
-	 * <p>Recommended you don't use this and use {@link #getFileContents(String)} instead!
+	 * <p>
+	 * <b><i>WARNING:</i></b> CAN STILL, VERY EASILY CAUSE AN
+	 * {@link IOException}
+	 * <p>
+	 * Recommended you don't use this and use {@link #getFileContents(String)}
+	 * instead!
 	 * 
-	 * @param fileName The path for the file
+	 * @param fileName
+	 *            The path for the file
 	 * @return The given file's <code>BufferedReader</code>
 	 */
 	public static BufferedReader getFileReader(String fileName)
 	{
-		Charset c = Charset.forName("US-ASCII");
-		Path p = Paths.get(fileName);
+		final Charset c = Charset.forName("US-ASCII");
+		final Path p = Paths.get(fileName);
 
 		try
 		{
 			return Files.newBufferedReader(p, c);
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -212,10 +228,12 @@ public class FileHelper
 	 * Returns all the Files in the specified directory and all sub-directories.
 	 * 
 	 * <p>
-	 * For instance, If you have a folder, /Files/Documents/Maps, and call this method for Hello.
-	 * It will return all the files in Documents and all the files in Maps!
+	 * For instance, If you have a folder, /Files/Documents/Maps, and call this
+	 * method for Hello. It will return all the files in Documents and all the
+	 * files in Maps!
 	 * 
-	 * @param directory The directory to check.
+	 * @param directory
+	 *            The directory to check.
 	 * @return All the files in the folder and sub folders
 	 */
 	public static File[] getFilesInFolder(File dir)
@@ -226,11 +244,12 @@ public class FileHelper
 	/**
 	 * Prints the files lines to the console
 	 * 
-	 * @param fileName The path for the file
+	 * @param fileName
+	 *            The path for the file
 	 */
 	public static void printFileContents(String fileName)
 	{
-		String[] lines = getFileContents(fileName);
+		final String[] lines = getFileContents(fileName);
 
 		for (int i = 0; i < lines.length; i++)
 		{
@@ -241,7 +260,8 @@ public class FileHelper
 	/**
 	 * Deletes the given file and creates a new one with no content
 	 * 
-	 * @param fileName The path for the file
+	 * @param fileName
+	 *            The path for the file
 	 * @return A Path to the given File
 	 */
 	public static Path resetFile(String fileName)
@@ -252,26 +272,31 @@ public class FileHelper
 	/**
 	 * Deletes the given file and creates a new one with the given text
 	 * 
-	 * @param fileName The path for the file
-	 * @param textToAdd Any text you would like to add to the new file
+	 * @param fileName
+	 *            The path for the file
+	 * @param textToAdd
+	 *            Any text you would like to add to the new file
 	 * @return A Path to the given File
 	 */
 	public static Path resetFile(String fileName, String textToAdd)
 	{
-		Path p = Paths.get(fileName);
-
+		final Path p = Paths.get(fileName);
 		deleteFile(fileName);
 		createFile(fileName, false);
-		FileHelper.writeToFile(fileName, textToAdd, false);
-
+		if (!textToAdd.isEmpty())
+		{
+			FileHelper.writeToFile(fileName, textToAdd, false);
+		}
 		return p;
 	}
 
 	/**
 	 * Writes the given string to the given File with a new line afterwards
 	 * 
-	 * @param fileName The path for the file
-	 * @param stuff The String you want to write to the given file
+	 * @param fileName
+	 *            The path for the file
+	 * @param stuff
+	 *            The String you want to write to the given file
 	 * @return True: if the String was written to the file
 	 */
 	public static boolean writeToFile(String fileName, String stuff)
@@ -282,9 +307,12 @@ public class FileHelper
 	/**
 	 * Writes the given string to the given File with
 	 * 
-	 * @param fileName The path for the file
-	 * @param stuff The String you want to write to the given file
-	 * @param newLine If you want a '\n' character after the 'stuff' parameter
+	 * @param fileName
+	 *            The path for the file
+	 * @param stuff
+	 *            The String you want to write to the given file
+	 * @param newLine
+	 *            If you want a '\n' character after the 'stuff' parameter
 	 * @return True: if the String was written to the file
 	 */
 	public static boolean writeToFile(String fileName, String stuff, boolean newLine)
@@ -298,7 +326,7 @@ public class FileHelper
 			}
 			return true;
 		}
-		catch (IOException x)
+		catch (final IOException x)
 		{
 			System.err.format("IOException: %s%n", x);
 			x.printStackTrace();

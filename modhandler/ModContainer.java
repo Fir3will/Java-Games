@@ -1,55 +1,85 @@
 package modhandler;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import main.utils.CompoundTag;
-import main.utils.SaveType;
+import main.events.Event;
+import main.events.EventException;
+import main.events.EventHandler;
+import main.events.LoadEvent;
+import main.saving.CompoundTag;
+import main.saving.DataTag;
+import main.saving.Savable;
+import modhandler.Initialization.State;
 
 public class ModContainer
 {
-	public static ModContainer addMod(SimpleMod mod, String modid)
-	{
-		return new ModContainer(mod, mod.getClass(), modid);
-	}
-
-	private ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
-	private Class<?> baseClass;
-	private SimpleMod mod;
-	private IEventHandler proxy;
-	private String modid;
-	private InfoFile infoFile;
+	private final Object mod;
+	private final Savable saver;
+	private final Object eventHandler;
+	private final String modid;
+	private final String version;
+	private final String name;
 	private boolean disabled;
 
-	public ModContainer(SimpleMod mod, Class<? extends SimpleMod> baseClass, String modid)
+	public ModContainer(Object mod)
 	{
-		System.out.println("[Added new Mod] Class: " + baseClass.getName() + ", Modid: " + modid);
-		Importer.addMod(this, mod);
 		this.mod = mod;
-		this.baseClass = baseClass;
-		this.modid = modid;
-		addClass(this.baseClass);
+		modid = mod.getClass().getAnnotation(Mod.class).modid();
+		version = mod.getClass().getAnnotation(Mod.class).version();
+		name = mod.getClass().getAnnotation(Mod.class).name();
+		saver = getSaver(mod);
+		eventHandler = getEventHandler(mod);
+		System.out.println("[Added new Mod] Class: " + mod.getClass().getName() + ", Name: " + name + ", Modid: " + modid + ", Version: " + version);
+		Loader.addMod(this, mod);
+		sendEvent(new LoadEvent(this));
 	}
 
-	public void addClass(Class<?> clazz)
+	private Object getEventHandler(Object mod)
 	{
-		for (int i = 0; i < classes.size(); i++)
+		try
 		{
-			if (!classes.get(i).getName().equals(clazz.getName()))
+			String save = mod.getClass().getAnnotation(Mod.class).events();
+			return save.equals("null") ? null : Class.forName(save).newInstance();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private Savable getSaver(Object mod)
+	{
+		try
+		{
+			String save = mod.getClass().getAnnotation(Mod.class).save();
+			return (Savable) (save.equals("null") ? null : Class.forName(save).newInstance());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void initMethod(State state)
+	{
+		try
+		{
+			Method[] mets = mod.getClass().getMethods();
+			for (Method met : mets)
 			{
-				classes.add(clazz);
+				if (met.isAnnotationPresent(Initialization.class) && met.getAnnotation(Initialization.class).value() == state)
+				{
+					met.invoke(mod);
+				}
 			}
 		}
-	}
-
-	public void addModInfo(InfoFile infoFile)
-	{
-		this.infoFile = infoFile;
-	}
-
-	public void addModProxy(IEventHandler clazz)
-	{
-		proxy = clazz;
-		initiateProxyMethod("init");
+		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public boolean disabled()
@@ -57,36 +87,60 @@ public class ModContainer
 		return disabled;
 	}
 
-	public InfoFile getInfoFile()
-	{
-		return infoFile;
-	}
-
 	public String getModid()
 	{
 		return modid;
 	}
 
-	public void initiateProxyMethod(String methodName, Object... parameters)
+	public String getVersion()
+	{
+		return version;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public boolean isDisabled()
+	{
+		return disabled;
+	}
+
+	public void sendEvent(Event event)
 	{
 		if (disabled()) return;
 
 		try
 		{
-			Method[] methods = proxy.getClass().getMethods();
-
-			for (int i = 0; i < methods.length; i++)
+			if (eventHandler != null)
 			{
-				if (methodName == methods[i].getName())
+				final Method[] methods = eventHandler.getClass().getMethods();
+
+				for (final Method method : methods)
 				{
-					methods[i].invoke(proxy, parameters);
+					if (method.isAnnotationPresent(EventHandler.class) && method.getParameterTypes()[0] == event.getClass())
+					{
+						method.invoke(eventHandler, event);
+					}
 				}
 			}
 		}
-		catch (Exception e)
+		catch (final IllegalArgumentException e)
 		{
-			System.err.println("Error Loading Proxy Method: " + methodName);
-			e.printStackTrace();
+			new EventException("Method must have one argument and a " + event.getClass().getSimpleName() + " parameter", e).printStackTrace();
+		}
+		catch (final IllegalAccessException e)
+		{
+			System.err.println("Caught Exception: " + e.getMessage());
+			System.err.println("Error Send Event: " + event.getClass().getName() + ", Modid: " + getModid());
+			new EventException(e).printStackTrace();
+		}
+		catch (final InvocationTargetException e)
+		{
+			System.err.println("Caught Exception: " + e.getMessage());
+			System.err.println("Error Send Event: " + event.getClass().getName() + ", Modid: " + getModid());
+			new EventException(e).printStackTrace();
 		}
 	}
 
@@ -98,24 +152,25 @@ public class ModContainer
 	@Override
 	public String toString()
 	{
-		return mod.toString();
+		return getName() + "|" + getVersion();
 	}
 
-	public void startSaving(SaveType type)
+	public void startSaving()
 	{
-		if (mod.getSave() != null)
+		if (saver != null)
 		{
-			CompoundTag tag = new CompoundTag(mod);
-			mod.getSave().writeToTag(tag);
+			final DataTag tag = new DataTag();
+			saver.saveToTag(tag);
+			DataTag.saveTo(new File(CompoundTag.PLAYER_FOLDER, getModid() + ".dat"), tag);
 		}
 	}
 
-	public void startLoading(SaveType type)
+	public void startLoading()
 	{
-		if (mod.getSave() != null)
+		if (saver != null)
 		{
-			CompoundTag tag = new CompoundTag(mod);
-			mod.getSave().readFromTag(tag);
+			final DataTag tag = DataTag.loadFrom(new File(CompoundTag.PLAYER_FOLDER, getModid() + ".dat"));
+			saver.loadFromTag(tag);
 		}
 	}
 }

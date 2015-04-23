@@ -15,7 +15,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import main.Save;
-import main.Vars;
 
 public class OpsPlayerColor extends OptionBar implements ChangeListener
 {
@@ -27,48 +26,33 @@ public class OpsPlayerColor extends OptionBar implements ChangeListener
 	public void initBar()
 	{
 		newContentPane = new JPanel(new BorderLayout());
-
-		// Set up the banner at the top of the window
 		banner = new JLabel("Your Player's Color Is This, Cancel to save the color!", SwingConstants.CENTER);
 		banner.setForeground(Save.PLAYER_COLOR.brighter());
 		banner.setBackground(Color.blue);
 		banner.setOpaque(true);
 		banner.setFont(new Font("SansSerif", Font.BOLD, 18));
 		banner.setPreferredSize(new Dimension(100, 65));
-
-		JPanel bannerPanel = new JPanel(new BorderLayout());
+		final JPanel bannerPanel = new JPanel(new BorderLayout());
 		bannerPanel.add(banner, BorderLayout.CENTER);
 		bannerPanel.setBorder(BorderFactory.createTitledBorder("Banner"));
-
-		// Set up color chooser for setting text color
 		tcc = new JColorChooser(banner.getForeground());
 		tcc.getSelectionModel().addChangeListener(this);
 		tcc.setBorder(BorderFactory.createTitledBorder("Choose Player Color"));
-
 		newContentPane.add(bannerPanel, BorderLayout.CENTER);
 		newContentPane.add(tcc, BorderLayout.PAGE_END);
-
-		// Create and set up the window.
-		JFrame frame = new JFrame("Change Player Color");
-		Vars.frames.add(frame);
+		final JFrame frame = new JFrame("Change Player Color");
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-		// Create and set up the content pane.
-		newContentPane.setOpaque(true); // content panes must be opaque
+		newContentPane.setOpaque(true);
 		frame.setContentPane(newContentPane);
-
-		// Display the window.
 		frame.setVisible(true);
-
 		frame.pack();
 	}
 
 	@Override
 	public void performEvent(ActionEvent e)
 	{
-		Color newColor = tcc.getColor();
+		final Color newColor = tcc.getColor();
 		banner.setForeground(newColor);
-		Save.PLAYER_COLOR = new Color(newColor.getRed(), newColor.getGreen(), newColor.getBlue(), newColor.getAlpha());
 		Save.PLAYER_COLOR = newColor;
 	}
 

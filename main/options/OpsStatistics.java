@@ -8,7 +8,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 import main.Save;
-import main.Vars;
 
 public class OpsStatistics extends OptionBar
 {
@@ -17,8 +16,7 @@ public class OpsStatistics extends OptionBar
 	@Override
 	public void initBar()
 	{
-		JFrame frame = new JFrame("Credits");
-		Vars.frames.add(frame);
+		final JFrame frame = new JFrame("Credits");
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
@@ -28,7 +26,6 @@ public class OpsStatistics extends OptionBar
 		credits.setEditable(false);
 		credits.setForeground(Color.BLUE);
 		credits.setBorder(BorderFactory.createTitledBorder("Statistics for: " + Save.PLAYER_NAME));
-		credits.append("Tanks Max Score: " + Save.TN_MAX_SCORE + "\n");
 
 		frame.add(new JScrollPane(credits));
 

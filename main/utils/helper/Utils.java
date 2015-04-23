@@ -22,7 +22,7 @@ public class Utils
 
 			if (showError)
 			{
-				IllegalArgumentException as = new IllegalArgumentException("The Parameter Cannot Be Empty!");
+				final IllegalArgumentException as = new IllegalArgumentException("The Parameter Cannot Be Empty!");
 				as.printStackTrace();
 				exit();
 			}
@@ -33,16 +33,13 @@ public class Utils
 
 	public static boolean isInRange(float num, float max, float min, boolean showError)
 	{
-		boolean bool = false;
+		final boolean bool = false;
 
-		if (num > max || num < min)
+		if (num > max || num < min) if (showError)
 		{
-			if (showError)
-			{
-				IllegalArgumentException as = new IllegalArgumentException("The Number Has to be more than " + max + " and less than " + min + "!");
-				as.printStackTrace();
-				exit();
-			}
+			final IllegalArgumentException as = new IllegalArgumentException("The Number Has to be more than " + max + " and less than " + min + "!");
+			as.printStackTrace();
+			exit();
 		}
 
 		return bool;
@@ -58,7 +55,7 @@ public class Utils
 
 			if (showError)
 			{
-				IllegalArgumentException as = new IllegalArgumentException("The Parameter Cannot Be Null!");
+				final IllegalArgumentException as = new IllegalArgumentException("The Parameter Cannot Be Null!");
 				as.printStackTrace();
 				exit();
 			}
@@ -69,7 +66,7 @@ public class Utils
 
 	public static int toExponent(int original, int exponent)
 	{
-		int org = original;
+		final int org = original;
 
 		for (int i = 0; i < exponent - 1; i++)
 		{

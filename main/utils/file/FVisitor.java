@@ -7,7 +7,6 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import main.Vars;
-import modhandler.InfoFile;
 
 public class FVisitor implements FileVisitor<Path>
 {
@@ -28,7 +27,7 @@ public class FVisitor implements FileVisitor<Path>
 	{
 		if (file.toString().endsWith(".zip") || file.toString().endsWith(".jar"))
 		{
-			File dir = new File(Vars.HOME_DIR + "natives/" + file.getFileName().toString().replaceAll(".zip", "").replaceAll(".jar", ""));
+			final File dir = new File(Vars.HOME_DIR + "natives/" + file.getFileName().toString().replaceAll(".zip", "").replaceAll(".jar", ""));
 
 			if (file.toString().endsWith(".zip"))
 			{
@@ -41,26 +40,16 @@ public class FVisitor implements FileVisitor<Path>
 
 			try
 			{
-				File[] files = FileHelper.getFilesInFolder(dir);
-
-				for (int i = 0; i < files.length; i++)
-				{
-					if (files[i].toString().endsWith("_info.doc"))
-					{
-						new InfoFile(files[i]);
-					}
-				}
-
-				JavaFileHelper.getClassesFromFolders(dir, dir);
+				JavaFileHelper.getModsFrom(dir, dir);
 			}
-			catch (Exception e1)
+			catch (final Exception e1)
 			{
 				e1.printStackTrace();
 			}
 		}
-		else if (!file.toString().contains(".DS_Store"))
+		else if (!file.toFile().isHidden())
 		{
-			System.err.println("Random File: -" + file + "-");
+			System.err.println("Random File: \"" + file + "\"");
 		}
 		return FileVisitResult.CONTINUE;
 	}

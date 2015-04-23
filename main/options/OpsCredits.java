@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
-import main.Vars;
 
 public class OpsCredits extends OptionBar
 {
@@ -17,23 +16,22 @@ public class OpsCredits extends OptionBar
 	@Override
 	public void initBar()
 	{
-		JFrame frame = new JFrame("Credits");
-		Vars.frames.add(frame);
+		final JFrame frame = new JFrame("Credits");
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		creds = new String[] {"Created By:  Hashim Kayani", "Programmer: Hashim Kayani", "Graphics Manager: Hashim Kayani", "SHOUT OUTS: TRCS(For their Botball Program)"};
+		creds = new String[] { "Created By:  Hashim Kayani", "Programmer: Hashim Kayani", "Graphics Manager: Hashim Kayani", "SHOUT OUTS: TRCS(For their Botball Program)" };
 
 		credits = new JTextArea(5, 50);
 		credits.setEditable(false);
 		credits.setForeground(Color.BLUE);
 		credits.setBorder(BorderFactory.createTitledBorder("Credits"));
 
-		for (int i = 0; i < creds.length; i++)
+		for (final String cred : creds)
 		{
-			credits.append(creds[i] + "\n");
+			credits.append(cred + "\n");
 		}
 
 		frame.add(new JScrollPane(credits));

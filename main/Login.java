@@ -8,16 +8,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.nio.file.InvalidPathException;
-import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import main.games.Games;
-import main.utils.Main;
+import main.game.Games;
 import main.utils.helper.Utils;
+import modhandler.Initialization.State;
+import modhandler.Loader;
+import modhandler.ModContainer;
 
 public class Login extends JPanel implements ActionListener, KeyListener
 {
@@ -26,10 +27,7 @@ public class Login extends JPanel implements ActionListener, KeyListener
 
 	public static void login()
 	{
-		Login LOGIN = new Login();
-
-		Vars.frames = new ArrayList<JFrame>();
-		Vars.frames.add(Vars.login);
+		final Login LOGIN = new Login();
 
 		Vars.login.setContentPane(LOGIN);
 		Vars.login.setSize(800, 600);
@@ -40,21 +38,18 @@ public class Login extends JPanel implements ActionListener, KeyListener
 		Vars.login.setVisible(true);
 	}
 
-	private JTextField userName, password;
-	private JTextArea info;
+	private final JTextField userName, password;
+	private final JTextArea info;
 
-	private JButton login;
+	private final JButton login;
 
 	public Login()
 	{
 		super(new BorderLayout());
 
-		for (int i = 0; i < Main.mods.length; i++)
+		for (ModContainer mc : Loader.getContainerList())
 		{
-			if (!Main.mods[i].isDisabled())
-			{
-				Main.mods[i].init();
-			}
+			mc.initMethod(State.INIT);
 		}
 
 		userName = new JTextField("", 20);
@@ -71,7 +66,7 @@ public class Login extends JPanel implements ActionListener, KeyListener
 		info.setWrapStyleWord(true);
 		info.setBorder(BorderFactory.createTitledBorder("Details"));
 		info.setText("Type in the name you want to be called. Remember, if you played this game before, you will need to use your old name to load your old stats. Remember to try out all the games and aspects and just have fun! Enjoy my game! Highly Recommended that you set up your options before starting playing.");
-		Font small = new Font("Helvetica", Font.ITALIC, 14);
+		final Font small = new Font("Helvetica", Font.ITALIC, 14);
 		info.setFont(small);
 
 		login = new JButton("Login");
@@ -109,16 +104,13 @@ public class Login extends JPanel implements ActionListener, KeyListener
 					if (Vars.save.canLogin())
 					{
 						Save.FILE_PASSWORD = password.getText();
-						loggedIn = true;
+						Login.loggedIn = true;
 						Games.openLauncher();
 						Vars.login.dispose();
 
-						for (int i = 0; i < Main.mods.length; i++)
+						for (Object obj : Loader.getModList())
 						{
-							if (!Main.mods[i].isDisabled())
-							{
-								Main.mods[i].startLoading();
-							}
+							Loader.getContainerFor(obj).startLoading();
 						}
 
 						System.gc();
@@ -132,7 +124,7 @@ public class Login extends JPanel implements ActionListener, KeyListener
 					}
 				}
 			}
-			catch (InvalidPathException f)
+			catch (final InvalidPathException f)
 			{
 				info.setText("Invalid Letters for the name or password!");
 				userName.setBackground(Color.RED);
@@ -151,23 +143,17 @@ public class Login extends JPanel implements ActionListener, KeyListener
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		int key = e.getKeyCode();
+		final int key = e.getKeyCode();
 
-		if (userName.isFocusOwner())
+		if (userName.isFocusOwner()) if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_TAB)
 		{
-			if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_TAB)
-			{
-				password.requestFocus();
-				return;
-			}
+			password.requestFocus();
+			return;
 		}
-		if (password.isFocusOwner())
+		if (password.isFocusOwner()) if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_TAB)
 		{
-			if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_TAB)
-			{
-				login.doClick();
-				return;
-			}
+			login.doClick();
+			return;
 		}
 	}
 

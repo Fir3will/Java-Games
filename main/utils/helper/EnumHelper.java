@@ -8,8 +8,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import main.utils.SaveType;
-import modhandler.EnumGame;
+import main.game.sprites.Gravity;
 
 public class EnumHelper
 {
@@ -20,78 +19,71 @@ public class EnumHelper
 	private static Method fieldAccessorSet = null;
 	private static boolean isSetup = false;
 
-	private static Class<?>[][] commonTypes = {{SaveType.class}};
+	private static Class<?>[][] commonTypes = { { Gravity.class, float.class } };
 
-	public static EnumGame addGame(String gameName)
+	public static Gravity addGravity(String name, float gravity)
 	{
-		return addEnum(EnumGame.class, gameName);
-	}
-
-	public static SaveType addSaveType(String enumName)
-	{
-		return addEnum(SaveType.class, enumName);
+		return addEnum(Gravity.class, name, Float.valueOf(gravity));
 	}
 
 	private static void setup()
 	{
-		if (isSetup) return;
+		if (EnumHelper.isSetup) return;
 
 		try
 		{
-			Method getReflectionFactory = Class.forName("sun.reflect.ReflectionFactory").getDeclaredMethod("getReflectionFactory");
-			reflectionFactory = getReflectionFactory.invoke(null);
-			newConstructorAccessor = Class.forName("sun.reflect.ReflectionFactory").getDeclaredMethod("newConstructorAccessor", Constructor.class);
-			newInstance = Class.forName("sun.reflect.ConstructorAccessor").getDeclaredMethod("newInstance", Object[].class);
-			newFieldAccessor = Class.forName("sun.reflect.ReflectionFactory").getDeclaredMethod("newFieldAccessor", Field.class, boolean.class);
-			fieldAccessorSet = Class.forName("sun.reflect.FieldAccessor").getDeclaredMethod("set", Object.class, Object.class);
+			final Method getReflectionFactory = Class.forName("sun.reflect.ReflectionFactory").getDeclaredMethod("getReflectionFactory");
+			EnumHelper.reflectionFactory = getReflectionFactory.invoke(null);
+			EnumHelper.newConstructorAccessor = Class.forName("sun.reflect.ReflectionFactory").getDeclaredMethod("newConstructorAccessor", Constructor.class);
+			EnumHelper.newInstance = Class.forName("sun.reflect.ConstructorAccessor").getDeclaredMethod("newInstance", Object[].class);
+			EnumHelper.newFieldAccessor = Class.forName("sun.reflect.ReflectionFactory").getDeclaredMethod("newFieldAccessor", Field.class, boolean.class);
+			EnumHelper.fieldAccessorSet = Class.forName("sun.reflect.FieldAccessor").getDeclaredMethod("set", Object.class, Object.class);
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 		}
 
-		isSetup = true;
+		EnumHelper.isSetup = true;
 	}
 
 	private static Object getConstructorAccessor(Class<?> enumClass, Class<?>[] additionalParameterTypes) throws Exception
 	{
-		Class<?>[] parameterTypes = new Class[additionalParameterTypes.length + 2];
+		final Class<?>[] parameterTypes = new Class[additionalParameterTypes.length + 2];
 		parameterTypes[0] = String.class;
 		parameterTypes[1] = int.class;
 		System.arraycopy(additionalParameterTypes, 0, parameterTypes, 2, additionalParameterTypes.length);
-		return newConstructorAccessor.invoke(reflectionFactory, enumClass.getDeclaredConstructor(parameterTypes));
+		return EnumHelper.newConstructorAccessor.invoke(EnumHelper.reflectionFactory, enumClass.getDeclaredConstructor(parameterTypes));
 	}
 
 	private static <T extends Enum<?>> T makeEnum(Class<T> enumClass, String value, int ordinal, Class<?>[] additionalTypes, Object[] additionalValues) throws Exception
 	{
-		Object[] parms = new Object[additionalValues.length + 2];
+		final Object[] parms = new Object[additionalValues.length + 2];
 		parms[0] = value;
 		parms[1] = Integer.valueOf(ordinal);
 		System.arraycopy(additionalValues, 0, parms, 2, additionalValues.length);
-		return enumClass.cast(newInstance.invoke(getConstructorAccessor(enumClass, additionalTypes), new Object[] {parms}));
+		return enumClass.cast(EnumHelper.newInstance.invoke(getConstructorAccessor(enumClass, additionalTypes), new Object[] { parms }));
 	}
 
 	private static void setFailsafeFieldValue(Field field, Object target, Object value) throws Exception
 	{
 		field.setAccessible(true);
-		Field modifiersField = Field.class.getDeclaredField("modifiers");
+		final Field modifiersField = Field.class.getDeclaredField("modifiers");
 		modifiersField.setAccessible(true);
 		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-		Object fieldAccessor = newFieldAccessor.invoke(reflectionFactory, field, false);
-		fieldAccessorSet.invoke(fieldAccessor, target, value);
+		final Object fieldAccessor = EnumHelper.newFieldAccessor.invoke(EnumHelper.reflectionFactory, field, false);
+		EnumHelper.fieldAccessorSet.invoke(fieldAccessor, target, value);
 	}
 
 	private static void blankField(Class<?> enumClass, String fieldName) throws Exception
 	{
-		for (Field field : Class.class.getDeclaredFields())
-		{
+		for (final Field field : Class.class.getDeclaredFields())
 			if (field.getName().contains(fieldName))
 			{
 				field.setAccessible(true);
 				setFailsafeFieldValue(field, enumClass, null);
 				break;
 			}
-		}
 	}
 
 	private static void cleanEnumCache(Class<?> enumClass) throws Exception
@@ -103,41 +95,39 @@ public class EnumHelper
 	private static <T extends Enum<?>> T addEnum(Class<T> enumType, String enumName, Object... paramValues)
 	{
 		setup();
-		return addEnum(commonTypes, enumType, enumName, paramValues);
+		return addEnum(EnumHelper.commonTypes, enumType, enumName, paramValues);
 	}
 
 	@SuppressWarnings("rawtypes")
 	private static <T extends Enum<?>> T addEnum(Class[][] map, Class<T> enumType, String enumName, Object... paramValues)
 	{
-		for (Class[] lookup : map)
-		{
+		for (final Class[] lookup : map)
 			if (lookup[0] == enumType)
 			{
-				Class<?>[] paramTypes = new Class<?>[lookup.length - 1];
+				final Class<?>[] paramTypes = new Class<?>[lookup.length - 1];
 				if (paramTypes.length > 0)
 				{
 					System.arraycopy(lookup, 1, paramTypes, 0, paramTypes.length);
 				}
 				return addEnum(enumType, enumName, paramTypes, paramValues);
 			}
-		}
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	private static <T extends Enum<?>> T addEnum(Class<T> enumType, String enumName, Class<?>[] paramTypes, Object[] paramValues)
 	{
-		if (!isSetup)
+		if (!EnumHelper.isSetup)
 		{
 			setup();
 		}
 
 		Field valuesField = null;
-		Field[] fields = enumType.getDeclaredFields();
+		final Field[] fields = enumType.getDeclaredFields();
 
-		for (Field field : fields)
+		for (final Field field : fields)
 		{
-			String name = field.getName();
+			final String name = field.getName();
 			if (name.equals("$VALUES") || name.equals("ENUM$VALUES"))
 			{
 				valuesField = field;
@@ -145,19 +135,17 @@ public class EnumHelper
 			}
 		}
 
-		int flags = Modifier.PUBLIC | Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL | 0x1000;
+		final int flags = Modifier.PUBLIC | Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL | 0x1000;
 		if (valuesField == null)
 		{
-			String valueType = String.format("[L%s;", enumType.getName().replace('.', '/'));
+			final String valueType = String.format("[L%s;", enumType.getName().replace('.', '/'));
 
-			for (Field field : fields)
-			{
+			for (final Field field : fields)
 				if ((field.getModifiers() & flags) == flags && field.getType().getName().replace('.', '/').equals(valueType))
 				{
 					valuesField = field;
 					break;
 				}
-			}
 		}
 
 		if (valuesField == null)
@@ -166,9 +154,9 @@ public class EnumHelper
 			System.err.println("Flags: " + String.format("%16s", Integer.toBinaryString(flags)).replace(' ', '0'));
 			System.err.print("Fields:");
 
-			for (Field field : fields)
+			for (final Field field : fields)
 			{
-				String mods = String.format("%16s", Integer.toBinaryString(field.getModifiers())).replace(' ', '0');
+				final String mods = String.format("%16s", Integer.toBinaryString(field.getModifiers())).replace(' ', '0');
 				System.err.print("       " + mods + " " + field.getName() + ": " + field.getType().getName());
 			}
 			System.err.println();
@@ -179,16 +167,16 @@ public class EnumHelper
 
 		try
 		{
-			T[] previousValues = (T[]) valuesField.get(enumType);
-			List<T> values = new ArrayList<T>(Arrays.asList(previousValues));
-			T newValue = makeEnum(enumType, enumName, values.size(), paramTypes, paramValues);
+			final T[] previousValues = (T[]) valuesField.get(enumType);
+			final List<T> values = new ArrayList<T>(Arrays.asList(previousValues));
+			final T newValue = makeEnum(enumType, enumName, values.size(), paramTypes, paramValues);
 			values.add(newValue);
 			setFailsafeFieldValue(valuesField, null, values.toArray((T[]) Array.newInstance(enumType, 0)));
 			cleanEnumCache(enumType);
 
 			return newValue;
 		}
-		catch (Exception e)
+		catch (final Exception e)
 		{
 			e.printStackTrace();
 			throw new RuntimeException(e.getMessage(), e);
@@ -197,7 +185,7 @@ public class EnumHelper
 
 	static
 	{
-		if (!isSetup)
+		if (!EnumHelper.isSetup)
 		{
 			setup();
 		}

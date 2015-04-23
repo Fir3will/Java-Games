@@ -2,37 +2,49 @@ package main;
 
 import java.awt.Color;
 import java.io.File;
-import main.utils.CompoundTag;
+import java.util.List;
+import main.events.SaveEvent;
+import main.events.SaveEvent.OnLoadEvent;
+import main.events.SaveEvent.OnSaveEvent;
+import main.saving.DataTag;
 import main.utils.file.FileHelper;
-import testing.ItemTS;
+import main.utils.helper.JavaHelp;
+import modhandler.Loader;
 
 public class Save
 {
 	public File PLAYER_DIR;
-	private CompoundTag tag;
+	private DataTag tag;
+	private final List<String> stats;
 
-	public CompoundTag getTag()
+	public Save()
+	{
+		stats = JavaHelp.newArrayList();
+		addStatistic("Difficulty: " + Save.DIFFICULTY);
+		Loader.addEventToAll(new SaveEvent(this));
+	}
+
+	public DataTag getTag()
 	{
 		return tag;
 	}
 
 	public boolean canLogin()
 	{
-		PLAYER_DIR = new File(Vars.SAVE_DIR + PLAYER_NAME);
+		PLAYER_DIR = new File(Vars.SAVE_DIR + Save.PLAYER_NAME);
 
 		if (PLAYER_DIR.exists())
 		{
 			FileHelper.createFile(PLAYER_DIR.toString(), true);
-			String pass = FILE_PASSWORD;
-			tag = new CompoundTag(new File(PLAYER_DIR, "/player.dat"));
+			final String pass = Save.FILE_PASSWORD;
 			load();
-			if (pass.equals(tag.getString("Password"))) return true;
+			if (pass.equals(tag.getString("Password", ""))) return true;
 			else return false;
 		}
 		else
 		{
 			FileHelper.createFile(PLAYER_DIR.toString(), true);
-			tag = new CompoundTag(new File(Vars.SAVE_DIR + PLAYER_NAME + "/player.dat"));
+			tag = new DataTag();
 			save();
 			return true;
 		}
@@ -40,52 +52,40 @@ public class Save
 
 	public void load()
 	{
-		TS_DEFENCE_XP = tag.getInteger("TS Defence XP");
-		TS_ATTACK_XP = tag.getInteger("TS Attack XP");
-		TS_X = tag.getInteger("TS X");
-		TS_Y = tag.getInteger("TS Y");
-		TS_COINS = tag.getInteger("TS Coins");
-		TN_MAX_SCORE = tag.getInteger("TN SCORE");
-		DIFFICULTY = tag.getInteger("Difficulty");
-		PLAYER_NAME = tag.getString("Player Name");
-		PLAYER_COLOR = (Color) tag.getSerializable("Player Color");
-		SOUND_ON = tag.getBoolean("Is Sound");
+		tag = DataTag.loadFrom(new File(Vars.SAVE_DIR + Save.PLAYER_NAME + "/player.dat"));
+		Save.DIFFICULTY = tag.getInteger("Difficulty", 0);
+		Save.PLAYER_NAME = tag.getString("Player Name", "Player");
+		Save.SOUND_ON = tag.getBoolean("Is Sound", true);
 
-		for (int i = 0; i < TS_ITEMS.length; i++)
-		{
-			TS_ITEMS[i] = ItemTS.getIDItem(tag.getInteger("TS Item-" + i));
-		}
+		final int r = tag.getInteger("Color R", 255);
+		final int g = tag.getInteger("Color G", 255);
+		final int b = tag.getInteger("Color B", 255);
+		final int a = tag.getInteger("Color A", 0);
+		Save.PLAYER_COLOR = new Color(r, g, b, a);
+		Loader.addEventToAll(new OnLoadEvent(this, tag));
 	}
 
 	public void save()
 	{
-		tag.setInteger("TS Defence XP", TS_DEFENCE_XP);
-		tag.setInteger("TS Attack XP", TS_ATTACK_XP);
-		tag.setInteger("TS X", TS_X);
-		tag.setInteger("TS Y", TS_Y);
-		tag.setInteger("TS Coins", TS_COINS);
-		tag.setInteger("TN SCORE", TN_MAX_SCORE);
-		tag.setInteger("Difficulty", DIFFICULTY);
-		tag.setString("Password", FILE_PASSWORD);
-		tag.setString("Player Name", PLAYER_NAME);
-		tag.setSerializable("Player Color", PLAYER_COLOR);
-		tag.setBoolean("Is Sound", SOUND_ON);
-
-		for (int i = 0; i < TS_ITEMS.length; i++)
-		{
-			tag.setInteger("TS Item-" + i, TS_ITEMS[i] == null ? 0 : TS_ITEMS[i].itemID);
-		}
+		tag.setInteger("Difficulty", Save.DIFFICULTY);
+		tag.setString("Password", Save.FILE_PASSWORD);
+		tag.setString("Player Name", Save.PLAYER_NAME);
+		tag.setBoolean("Is Sound", Save.SOUND_ON);
+		tag.setInteger("Color R", Save.PLAYER_COLOR.getRed());
+		tag.setInteger("Color G", Save.PLAYER_COLOR.getGreen());
+		tag.setInteger("Color B", Save.PLAYER_COLOR.getBlue());
+		tag.setInteger("Color A", Save.PLAYER_COLOR.getAlpha());
+		Loader.addEventToAll(new OnSaveEvent(this, tag));
+		DataTag.saveTo(new File(Vars.SAVE_DIR + Save.PLAYER_NAME + "/player.dat"), tag);
 	}
 
-	public static int TS_DEFENCE_XP = 1;
-	public static int TS_ATTACK_XP = 1;
-	public static int TS_HEALTH = 50;
-	public static int TS_Y = 400;
-	public static int TS_X = 400;
-	public static int TS_COINS = 0;
-	public static int TN_MAX_SCORE = 1;
+	public void addStatistic(String statistic)
+	{
+		if (statistic == null || stats.contains(statistic)) return;
+		stats.add(statistic);
+	}
+
 	public static int DIFFICULTY = 1;
-	public static ItemTS[] TS_ITEMS = new ItemTS[8];
 	public static Color PLAYER_COLOR = Color.LIGHT_GRAY;
 	public static String FILE_PASSWORD;
 	public static String PLAYER_NAME;

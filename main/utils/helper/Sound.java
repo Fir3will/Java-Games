@@ -4,6 +4,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
+import main.utils.math.FastMath;
 
 public class Sound
 {
@@ -17,31 +18,32 @@ public class Sound
 	public static final String LEVEL_UP = "/sounds/level_up.wav";
 	public static final String BUTTON_CLICK = "/sounds/button_click.wav";
 
-	public static synchronized void playSound(final String fileName, final boolean loop, final float volumeModifier)
+	public static synchronized void playSound(final String fileName, final boolean loop, float volumeModifier)
 	{
-		new Thread(new Runnable()
+		volumeModifier = FastMath.clamp(volumeModifier, -6.0206F, 6.0206F);
+		//new Thread(new Runnable()
+		//{
+		//	@Override
+		//	public void run()
+		//	{
+		try
 		{
-			@Override
-			public void run()
+			final Clip clip = AudioSystem.getClip();
+			final AudioInputStream inputStream = AudioSystem.getAudioInputStream(Sound.class.getResourceAsStream(fileName));
+			clip.open(inputStream);
+			if (loop)
 			{
-				try
-				{
-					Clip clip = AudioSystem.getClip();
-					AudioInputStream inputStream = AudioSystem.getAudioInputStream(Sound.class.getResourceAsStream("/sounds/" + fileName));
-					clip.open(inputStream);
-					if (loop)
-					{
-						clip.loop(Clip.LOOP_CONTINUOUSLY);
-					}
-					FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-					gainControl.setValue(volumeModifier);
-					clip.start();
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
+				clip.loop(Clip.LOOP_CONTINUOUSLY);
 			}
-		}).start();
+			final FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+			gainControl.setValue(gainControl.getValue() + volumeModifier);
+			clip.start();
+		}
+		catch (final Exception e)
+		{
+			e.printStackTrace();
+		}
+		//	}
+		//}).start();
 	}
 }

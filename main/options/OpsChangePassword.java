@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import main.Save;
-import main.Vars;
 import main.utils.WarningFrame;
 import main.utils.WarningFrame.ButtonClicked;
 import main.utils.WarningFrame.WarningAction;
@@ -64,7 +63,6 @@ public class OpsChangePassword extends OptionBar
 		panel.add(ok, BorderLayout.SOUTH);
 
 		frame = new JFrame("Password");
-		Vars.frames.add(frame);
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
@@ -77,52 +75,49 @@ public class OpsChangePassword extends OptionBar
 	@Override
 	public void performEvent(ActionEvent e)
 	{
-		if ("password".equals(e.getActionCommand()))
+		if ("password".equals(e.getActionCommand())) if (password.getText().replaceAll(" ", "").isEmpty())
 		{
-			if (password.getText().replaceAll(" ", "").isEmpty())
+			password.setForeground(Color.RED);
+			password.setText("Invalid New Password!");
+		}
+		else if (oldPassword.getText().equals(Save.FILE_PASSWORD))
+		{
+			new WarningFrame(new WarningAction()
 			{
-				password.setForeground(Color.RED);
-				password.setText("Invalid New Password!");
-			}
-			else if (oldPassword.getText().equals(Save.FILE_PASSWORD))
-			{
-				new WarningFrame(new WarningAction()
+
+				@Override
+				public void buttonClicked(ButtonClicked type)
 				{
-
-					@Override
-					public void buttonClicked(ButtonClicked type)
+					if (type == ButtonClicked.YES_CLICKED)
 					{
-						if (type == ButtonClicked.YES_CLICKED)
-						{
-							System.out.println("New Password Set: " + password.getText());
-							Save.FILE_PASSWORD = password.getText();
-							frame.dispose();
-						}
-						else
-						{
-							password.setText("Didn't Change Password!");
-						}
+						System.out.println("New Password Set: " + password.getText());
+						Save.FILE_PASSWORD = password.getText();
+						frame.dispose();
 					}
-
-					@Override
-					public String getWarningMessage()
+					else
 					{
-						return "Change Password?";
+						password.setText("Didn't Change Password!");
 					}
+				}
 
-					@Override
-					public boolean removeFrame()
-					{
-						return true;
-					}
+				@Override
+				public String getWarningMessage()
+				{
+					return "Change Password?";
+				}
 
-				});
-			}
-			else
-			{
-				oldPassword.setText("Invalid Old Password");
-				oldPassword.setForeground(Color.RED);
-			}
+				@Override
+				public boolean removeFrame()
+				{
+					return true;
+				}
+
+			});
+		}
+		else
+		{
+			oldPassword.setText("Invalid Old Password");
+			oldPassword.setForeground(Color.RED);
 		}
 	}
 }

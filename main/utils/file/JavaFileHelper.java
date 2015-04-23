@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -20,13 +21,12 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import modhandler.Initialization.State;
 import modhandler.Mod;
 import modhandler.ModContainer;
-import modhandler.SimpleMod;
 
 /**
- * Helps with Java files. This includes
- * classes, jars, and zips.
+ * Helps with Java files. This includes classes, jars, and zips.
  * 
  * <p>
  * Contains only eight static methods so far...
@@ -38,12 +38,10 @@ import modhandler.SimpleMod;
  * <li>{@link #getJarEntriesIn(File)}
  * <li>{@link #getZipEntriesIn(File)}
  * <li>{@link #getClassesFromFolders(File, File)}
- * <li>{@link #getClassFromFile(String)}
  * 
  * <p>
- * This helps with handling Jar, Zip, and 
- * "Class" files easily without the hassle
- *  of dealing with it yourself 
+ * This helps with handling Jar, Zip, and "Class" files easily without the
+ * hassle of dealing with it yourself
  * 
  * @see java.util.jar.JarEntry
  * @see java.util.jar.JarFile
@@ -56,9 +54,24 @@ import modhandler.SimpleMod;
  */
 public class JavaFileHelper
 {
-	private static void copy(File file, OutputStream out) throws IOException
+	public static void copy(File inF, File outF) throws IOException
 	{
-		InputStream in = new FileInputStream(file);
+		InputStream in = new FileInputStream(inF);
+		OutputStream out = new FileOutputStream(outF);
+		try
+		{
+			copy(in, out);
+		}
+		finally
+		{
+			in.close();
+			out.close();
+		}
+	}
+
+	public static void copy(File file, OutputStream out) throws IOException
+	{
+		final InputStream in = new FileInputStream(file);
 		try
 		{
 			copy(in, out);
@@ -69,9 +82,9 @@ public class JavaFileHelper
 		}
 	}
 
-	private static void copy(InputStream in, File file) throws IOException
+	public static void copy(InputStream in, File file) throws IOException
 	{
-		OutputStream out = new FileOutputStream(file);
+		final OutputStream out = new FileOutputStream(file);
 		try
 		{
 			copy(in, out);
@@ -82,12 +95,12 @@ public class JavaFileHelper
 		}
 	}
 
-	private static void copy(InputStream in, OutputStream out) throws IOException
+	public static void copy(InputStream in, OutputStream out) throws IOException
 	{
-		byte[] buffer = new byte[1024];
+		final byte[] buffer = new byte[1024];
 		while (true)
 		{
-			int readCount = in.read(buffer);
+			final int readCount = in.read(buffer);
 			if (readCount < 0)
 			{
 				break;
@@ -99,26 +112,28 @@ public class JavaFileHelper
 	/**
 	 * Jars the given Jar file for you.
 	 * 
-	 * @param directory Where the files are
-	 * @param jarfile Where to send to
+	 * @param directory
+	 *            Where the files are
+	 * @param jarfile
+	 *            Where to send to
 	 */
 	public static void jar(File directory, File jarfile)
 	{
 		try
 		{
-			URI base = directory.toURI();
-			Deque<File> queue = new LinkedList<File>();
+			final URI base = directory.toURI();
+			final Deque<File> queue = new LinkedList<File>();
 			queue.push(directory);
-			OutputStream out = new FileOutputStream(jarfile);
+			final OutputStream out = new FileOutputStream(jarfile);
 			Closeable res = null;
-			JarOutputStream zout = new JarOutputStream(out);
+			final JarOutputStream zout = new JarOutputStream(out);
 			res = zout;
 
 			while (!queue.isEmpty())
 			{
 				directory = queue.pop();
 
-				for (File kid : directory.listFiles())
+				for (final File kid : directory.listFiles())
 				{
 					String name = base.relativize(kid.toURI()).getPath();
 					if (kid.isDirectory())
@@ -137,7 +152,7 @@ public class JavaFileHelper
 			}
 			res.close();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -146,8 +161,10 @@ public class JavaFileHelper
 	/**
 	 * Unjars the given Jar file for you.
 	 * 
-	 * @param jarFile Where the jar is
-	 * @param directory Where to send to
+	 * @param jarFile
+	 *            Where the jar is
+	 * @param directory
+	 *            Where to send to
 	 */
 	public static void unjar(File jarFile, File directory)
 	{
@@ -156,12 +173,12 @@ public class JavaFileHelper
 		{
 			jfile = new JarFile(jarFile);
 
-			Enumeration<? extends JarEntry> entries = jfile.entries();
+			final Enumeration<? extends JarEntry> entries = jfile.entries();
 
 			while (entries.hasMoreElements())
 			{
-				JarEntry entry = entries.nextElement();
-				File file = new File(directory, entry.getName());
+				final JarEntry entry = entries.nextElement();
+				final File file = new File(directory, entry.getName());
 				if (entry.isDirectory())
 				{
 					file.mkdirs();
@@ -169,7 +186,7 @@ public class JavaFileHelper
 				else
 				{
 					file.getParentFile().mkdirs();
-					InputStream in = jfile.getInputStream(entry);
+					final InputStream in = jfile.getInputStream(entry);
 					try
 					{
 						copy(in, file);
@@ -181,7 +198,7 @@ public class JavaFileHelper
 				}
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -190,8 +207,10 @@ public class JavaFileHelper
 	/**
 	 * Unzips the given Zip file for you.
 	 * 
-	 * @param zipFile Where the files are
-	 * @param directory Where to send to
+	 * @param zipFile
+	 *            Where the files are
+	 * @param directory
+	 *            Where to send to
 	 */
 	public static void unzip(File zipfile, File directory)
 	{
@@ -199,11 +218,11 @@ public class JavaFileHelper
 		try
 		{
 			zfile = new ZipFile(zipfile);
-			Enumeration<? extends ZipEntry> entries = zfile.entries();
+			final Enumeration<? extends ZipEntry> entries = zfile.entries();
 			while (entries.hasMoreElements())
 			{
-				ZipEntry entry = entries.nextElement();
-				File file = new File(directory, entry.getName());
+				final ZipEntry entry = entries.nextElement();
+				final File file = new File(directory, entry.getName());
 				if (entry.isDirectory())
 				{
 					file.mkdirs();
@@ -211,7 +230,7 @@ public class JavaFileHelper
 				else
 				{
 					file.getParentFile().mkdirs();
-					InputStream in = zfile.getInputStream(entry);
+					final InputStream in = zfile.getInputStream(entry);
 					try
 					{
 						copy(in, file);
@@ -223,7 +242,7 @@ public class JavaFileHelper
 				}
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			if (e.getMessage().equals("zip file is empty"))
 			{
@@ -239,26 +258,28 @@ public class JavaFileHelper
 	/**
 	 * Zips the given Zip file for you.
 	 * 
-	 * @param directory Where the files are
-	 * @param zipfile Where to send to
+	 * @param directory
+	 *            Where the files are
+	 * @param zipfile
+	 *            Where to send to
 	 */
 	public static void zip(File directory, File zipfile)
 	{
 		try
 		{
-			URI base = directory.toURI();
-			Deque<File> queue = new LinkedList<File>();
+			final URI base = directory.toURI();
+			final Deque<File> queue = new LinkedList<File>();
 			queue.push(directory);
-			OutputStream out = new FileOutputStream(zipfile);
+			final OutputStream out = new FileOutputStream(zipfile);
 			Closeable res = null;
-			ZipOutputStream zout = new ZipOutputStream(out);
+			final ZipOutputStream zout = new ZipOutputStream(out);
 			res = zout;
 
 			while (!queue.isEmpty())
 			{
 				directory = queue.pop();
 
-				for (File kid : directory.listFiles())
+				for (final File kid : directory.listFiles())
 				{
 					String name = base.relativize(kid.toURI()).getPath();
 					if (kid.isDirectory())
@@ -277,7 +298,7 @@ public class JavaFileHelper
 			}
 			res.close();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -286,26 +307,27 @@ public class JavaFileHelper
 	/**
 	 * Retrieves the {@link JarEntry}s
 	 * 
-	 * @param jarFile Where the JarFile is
+	 * @param jarFile
+	 *            Where the JarFile is
 	 */
 	@SuppressWarnings("resource")
 	public static JarEntry[] getJarEntriesIn(File jarFile)
 	{
-		ArrayList<JarEntry> entries = new ArrayList<JarEntry>();
+		final ArrayList<JarEntry> entries = new ArrayList<JarEntry>();
 
 		if (!jarFile.toString().endsWith(".jar")) throw new IllegalArgumentException("File isn't a Jar! " + jarFile.toString());
 
 		try
 		{
-			JarFile jar = new JarFile(jarFile);
-			Enumeration<? extends JarEntry> jes = jar.entries();
+			final JarFile jar = new JarFile(jarFile);
+			final Enumeration<? extends JarEntry> jes = jar.entries();
 
 			while (jes.hasMoreElements())
 			{
 				entries.add(jes.nextElement());
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			System.err.println("Error Loading Jar Entries from " + jarFile.toString());
 			e.printStackTrace();
@@ -317,26 +339,27 @@ public class JavaFileHelper
 	/**
 	 * Retrieves the {@link ZipEntry}s
 	 * 
-	 * @param zipFile Where the ZipFile is
+	 * @param zipFile
+	 *            Where the ZipFile is
 	 */
 	@SuppressWarnings("resource")
 	public static ZipEntry[] getZipEntriesIn(File zipFile)
 	{
-		ArrayList<ZipEntry> entries = new ArrayList<ZipEntry>();
+		final ArrayList<ZipEntry> entries = new ArrayList<ZipEntry>();
 
 		if (!zipFile.toString().endsWith(".zip")) throw new IllegalArgumentException("File isn't a Zip! " + zipFile.toString());
 
 		try
 		{
-			ZipFile zip = new ZipFile(zipFile);
-			Enumeration<? extends ZipEntry> zes = zip.entries();
+			final ZipFile zip = new ZipFile(zipFile);
+			final Enumeration<? extends ZipEntry> zes = zip.entries();
 
 			while (zes.hasMoreElements())
 			{
 				entries.add(zes.nextElement());
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			System.err.println("Error Loading Zip Entries from " + zipFile.toString());
 			e.printStackTrace();
@@ -346,21 +369,21 @@ public class JavaFileHelper
 	}
 
 	/**
-	 * Searches through the given File (folder) for
-	 * any class files to return.
+	 * Searches through the given File (folder) for any class files to return.
 	 * 
-	 * @param dir the current parent file too really...
-	 * @param parentFile The parent fil where the package starts
+	 * @param dir
+	 *            the current parent file too really...
+	 * @param parentFile
+	 *            The parent file where the package starts
 	 * 
-	 * @return An arraylist of classes that were found 
-	 * 			in the parent folder. Includes all the 
-	 * 			folders in this folder too!
-	 * 
-	 * @throws Exception If any (IO) exception occurs!
+	 * @return An array list of classes that were found in the parent folder.
+	 *         Includes all the folders in this folder too!
+	 * @throws ClassNotFoundException 
+	 * @throws MalformedURLException
 	 */
-	public static ArrayList<Class<?>> getClassesFromFolders(File dir, File parentFile) throws Exception
+	public static ArrayList<Class<?>> getClassesFromFolders(File dir, File parentFile) throws ClassNotFoundException, MalformedURLException
 	{
-		ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
+		final ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
 
 		if (dir.isDirectory())
 		{
@@ -372,75 +395,40 @@ public class JavaFileHelper
 				}
 				else if (dir.listFiles()[i].toString().endsWith(".class"))
 				{
-					URLClassLoader cl = URLClassLoader.newInstance(new URL[] {parentFile.toURI().toURL()});
-					Class<?> clazz = cl.loadClass(dir.listFiles()[i].toString().split(parentFile.getName() + "/")[1].replaceAll(".class", "").replaceAll("/", "."));
+					final URLClassLoader cl = URLClassLoader.newInstance(new URL[] { parentFile.toURI().toURL() });
+					final Class<?> clazz = cl.loadClass(dir.listFiles()[i].toString().split(parentFile.getName() + "/")[1].replaceAll(".class", "").replaceAll("/", "."));
 
-					if (clazz.getSuperclass() == SimpleMod.class)
-					{
-						if (clazz.isAnnotationPresent(Mod.class))
-						{
-							classes.add(clazz);
-							SimpleMod mod = (SimpleMod) clazz.newInstance();
-							ModContainer mc = ModContainer.addMod(mod, clazz.getAnnotation(Mod.class).modid());
-							mod.addContainer(mc);
-							mod.preInit();
-						}
-						else
-						{
-							System.err.println("[ADDING MOD CANCELED] Mod: " + clazz.getName() + ", DOES NOT HAVE THE 'Mod.class' ANNOTATION!");
-						}
-					}
+					classes.add(clazz);
 				}
 			}
 		}
 		return classes;
 	}
 
-	/**
-	 * Returns a Class from the given jarfile path
-	 * 
-	 * <p>
-	 * <b><i>WARNING VERY IFFY!</i></b>
-	 * 
-	 * @param lol The JarFile path
-	 * @return a class object of the class file...
-	 */
-	@SuppressWarnings("resource")
-	public static Class<?> getClassFromFile(String lol)
+	public static void getModsFrom(File dir, File parentFile) throws Exception
 	{
-		System.out.println("LOL: " + lol);
-		try
+		if (dir.isDirectory())
 		{
-			JarFile jarFile = new JarFile(lol);
-			Enumeration<JarEntry> e = jarFile.entries();
-
-			URL[] urls = {new URL("jar:file:" + lol + "!/")};
-			URLClassLoader cl = URLClassLoader.newInstance(urls);
-
-			while (e.hasMoreElements())
+			for (int i = 0; i < dir.listFiles().length; i++)
 			{
-				JarEntry je = e.nextElement();
-				System.out.println("File: " + je.getName());
-
-				if (je.getName().endsWith(".class"))
+				if (dir.listFiles()[i].isDirectory())
 				{
-					String className = je.getName().substring(0, je.getName().length() - 6).replace('/', '.');
-					Class<?> c = cl.loadClass(className);
+					getModsFrom(dir.listFiles()[i], parentFile);
+				}
+				else if (dir.listFiles()[i].toString().endsWith(".class"))
+				{
+					final URLClassLoader cl = URLClassLoader.newInstance(new URL[] { parentFile.toURI().toURL() });
+					final Class<?> clazz = cl.loadClass(dir.listFiles()[i].toString().split(parentFile.getName() + "/")[1].replaceAll(".class", "").replaceAll("/", "."));
 
-					if (c.getSuperclass() != SimpleMod.class)
+					if (clazz.isAnnotationPresent(Mod.class))
 					{
-						continue;
+						final Object mod = clazz.newInstance();
+						final ModContainer mc = new ModContainer(mod);
+						mc.initMethod(State.PRE_INIT);
 					}
-
-					return c;
 				}
 			}
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	/**
@@ -464,7 +452,7 @@ public class JavaFileHelper
 		{
 			return Class.forName(new RuntimeException().getStackTrace()[level].getClassName());
 		}
-		catch (ClassNotFoundException e)
+		catch (final ClassNotFoundException e)
 		{
 			e.printStackTrace();
 		}
@@ -494,19 +482,21 @@ public class JavaFileHelper
 	/**
 	 * Retrieve the file at the website and copies it to the given file
 	 * 
-	 * @param website the website where the file is
-	 * @param saveTo where the downloaded file will be held!
+	 * @param website
+	 *            the website where the file is
+	 * @param saveTo
+	 *            where the downloaded file will be held!
 	 */
 	public static void saveOnlineFile(String website, File saveTo)
 	{
 		try
 		{
-			InputStream in = new URL(website).openConnection().getInputStream();
-			FileOutputStream fos = new FileOutputStream(saveTo);
-			byte[] buf = new byte[512];
+			final InputStream in = new URL(website).openConnection().getInputStream();
+			final FileOutputStream fos = new FileOutputStream(saveTo);
+			final byte[] buf = new byte[512];
 			while (true)
 			{
-				int len = in.read(buf);
+				final int len = in.read(buf);
 
 				if (len == -1)
 				{
@@ -517,7 +507,7 @@ public class JavaFileHelper
 			in.close();
 			fos.close();
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			System.err.println("Error Saving Online File!");
 			System.err.println("File: " + saveTo.toString());

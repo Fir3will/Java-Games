@@ -19,9 +19,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import main.Vars;
-import modhandler.Importer;
-import modhandler.SimpleMod;
+import modhandler.Loader;
+import modhandler.ModContainer;
 
 public class OpsMods extends OptionBar
 {
@@ -30,48 +29,46 @@ public class OpsMods extends OptionBar
 		@Override
 		public void valueChanged(ListSelectionEvent e)
 		{
-			ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+			final ListSelectionModel lsm = (ListSelectionModel) e.getSource();
 
-			int minIndex = lsm.getMinSelectionIndex();
-			int maxIndex = lsm.getMaxSelectionIndex();
+			final int minIndex = lsm.getMinSelectionIndex();
+			final int maxIndex = lsm.getMaxSelectionIndex();
 
 			for (int i = minIndex; i <= maxIndex; i++)
-			{
 				if (lsm.isSelectedIndex(i))
 				{
-					mod = Importer.mods.get(i);
-					output.setText("Modid: " + mod.getModid() + "\nVersion: " + mod.getVersion() + "\nDisabled: " + mod.isDisabled());
+					mod = Loader.getContainerList().get(i);
+					output.setText("Modid: " + mod.getName() + "\nVersion: " + mod.getVersion() + "\nDisabled: " + mod.isDisabled());
 				}
-			}
 			output.setCaretPosition(output.getDocument().getLength());
 		}
 	}
 
 	public JTextArea output;
-	public JList<SimpleMod> list;
+	public JList<ModContainer> list;
 	public JTable table;
 	public String newline = "\n";
 	public ListSelectionModel listSelectionModel;
 	public JPanel panel;
-	public SimpleMod mod;
+	public ModContainer mod;
 	public JButton disable;
 
 	@Override
 	public void initBar()
 	{
 		panel = new JPanel(new BorderLayout());
-		list = new JList<SimpleMod>(Importer.mods.toArray(new SimpleMod[0]));
+		list = new JList<ModContainer>(Loader.getContainerList().toArray(new ModContainer[0]));
 
 		listSelectionModel = list.getSelectionModel();
 		listSelectionModel.addListSelectionListener(new SharedListSelectionHandler());
-		JScrollPane listPane = new JScrollPane(list);
+		final JScrollPane listPane = new JScrollPane(list);
 
-		JPanel controlPane = new JPanel();
+		final JPanel controlPane = new JPanel();
 
 		output = new JTextArea(1, 10);
 		output.setText("Modid: \nVersion: \nDisabled: ");
 		output.setEditable(false);
-		JScrollPane outputPane = new JScrollPane(output, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		final JScrollPane outputPane = new JScrollPane(output, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		disable = new JButton("Disable Mod");
 		disable.addActionListener(new ActionListener()
@@ -86,13 +83,13 @@ public class OpsMods extends OptionBar
 			}
 		});
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		final JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		panel.add(splitPane, BorderLayout.CENTER);
 		panel.add(disable, BorderLayout.SOUTH);
 
-		JPanel topHalf = new JPanel();
+		final JPanel topHalf = new JPanel();
 		topHalf.setLayout(new BoxLayout(topHalf, BoxLayout.LINE_AXIS));
-		JPanel listContainer = new JPanel(new GridLayout(1, 1));
+		final JPanel listContainer = new JPanel(new GridLayout(1, 1));
 		listContainer.setBorder(BorderFactory.createTitledBorder("All Mods"));
 		listContainer.add(listPane);
 
@@ -103,14 +100,13 @@ public class OpsMods extends OptionBar
 		topHalf.setPreferredSize(new Dimension(100, 110));
 		splitPane.add(topHalf);
 
-		JPanel bottomHalf = new JPanel(new BorderLayout());
+		final JPanel bottomHalf = new JPanel(new BorderLayout());
 		bottomHalf.add(controlPane, BorderLayout.NORTH);
 		bottomHalf.add(outputPane, BorderLayout.CENTER);
 		bottomHalf.setPreferredSize(new Dimension(450, 135));
 		splitPane.add(bottomHalf);
 
-		JFrame frame = new JFrame("Mods");
-		Vars.frames.add(frame);
+		final JFrame frame = new JFrame("Mods");
 		frame.add(panel);
 		frame.pack();
 		frame.setVisible(true);

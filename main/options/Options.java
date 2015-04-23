@@ -14,9 +14,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
-import main.Vars;
+import main.events.OptionEvent;
 import main.utils.helper.Utils;
-import modhandler.Importer;
+import modhandler.Loader;
 
 public class Options extends JPanel
 {
@@ -25,7 +25,7 @@ public class Options extends JPanel
 
 	public static final ArrayList<JButton> buttons = new ArrayList<JButton>();
 
-	private JTextArea info;
+	private final JTextArea info;
 
 	public Options()
 	{
@@ -38,19 +38,14 @@ public class Options extends JPanel
 		info.setWrapStyleWord(true);
 		info.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-		addOption(OpsMods.class, "Mods", "All Installed Mods");
-		addOption(OpsPlayerName.class, "Change Player Name", "What do you want the Player's name to be");
+		addOption(OpsMods.class, "Mods", "All Mods Loaded");
 		addOption(OpsGeneral.class, "General Settings", "General settings...");
 		addOption(OpsResetGame.class, "Reset Game", "Reset the Game so that all you do is delete the jar file to get rid of everything!");
 		addOption(OpsCheatCodes.class, "Cheat Codes", "Know any Cheat Codes?, Check here!");
 		addOption(OpsPlayerColor.class, "Change Player Color", "In game Player Color to Be!");
-		addOption(OpsLogout.class, "Logout", "Logout of the current account");
 		addOption(OpsChangePassword.class, "Change Password", "Change the password of your account");
 
-		for (int i = 0; i < Importer.modContainers.size(); i++)
-		{
-			Importer.modContainers.get(i).initiateProxyMethod("onOptionStartup", this);
-		}
+		Loader.addEventToAll(new OptionEvent(this));
 
 		addOption(OpsStatistics.class, "Statistics", "All the Max points, etc.");
 		addOption(OpsCredits.class, "Credits", "Makers and Helpers to create this project!");
@@ -63,7 +58,7 @@ public class Options extends JPanel
 		Utils.isNull(option, true);
 		final Class<? extends OptionBar> option1 = option;
 
-		JButton button = new JButton(buttonName);
+		final JButton button = new JButton(buttonName);
 		button.setToolTipText(buttonToolTip);
 		button.setAlignmentX(Component.CENTER_ALIGNMENT);
 		button.addActionListener(new ActionListener()
@@ -74,6 +69,7 @@ public class Options extends JPanel
 				try
 				{
 					option1.newInstance().actionPerformed(e);
+					repaint();
 				}
 				catch (InstantiationException | IllegalAccessException e1)
 				{
@@ -88,9 +84,7 @@ public class Options extends JPanel
 
 	public void initGui()
 	{
-		Options contentPane = new Options();
-
-		Vars.frames.add(Options.frame);
+		final Options contentPane = new Options();
 
 		Options.frame.setContentPane(contentPane);
 		Options.frame.setSize(800, 600);

@@ -192,11 +192,13 @@ public enum Keys
 	KEY_BEGIN(0xFF58),
 	KEY_UNDEFINED(0x0);
 
-	private final int keyCode;
+	public final int keyCode;
+	public final char character;
 
 	private Keys(int keyCode)
 	{
 		this.keyCode = keyCode;
+		character = (char) keyCode;
 	}
 
 	public int getKeyCode()
@@ -204,12 +206,23 @@ public enum Keys
 		return keyCode;
 	}
 
+	public char getChar()
+	{
+		return character;
+	}
+
+	public static Keys getKey(char code)
+	{
+		for (final Keys key : values())
+			if (key.getChar() == code) return key;
+
+		return null;
+	}
+
 	public static Keys getKey(int code)
 	{
-		for (Keys key : values())
-		{
+		for (final Keys key : values())
 			if (key.getKeyCode() == code) return key;
-		}
 
 		return null;
 	}
@@ -217,6 +230,7 @@ public enum Keys
 	@Override
 	public String toString()
 	{
-		return name().replaceAll("KEY_", "").toLowerCase();
+		final String n = name().replaceAll("KEY_", "").replaceAll("_", " ");
+		return n.length() > 1 ? n.substring(0, 1).toUpperCase() + n.substring(1).toLowerCase() : n;
 	}
 }

@@ -88,8 +88,8 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	public float a;
 
 	/**
-	 * Constructor instantiates a new <code>ColorRGBA</code> object. This
-	 * color is the default "white" with all values 1.
+	 * Constructor instantiates a new <code>ColorRGBA</code> object. This color
+	 * is the default "white" with all values 1.
 	 */
 	public RGBColor()
 	{
@@ -97,13 +97,18 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Constructor instantiates a new <code>ColorRGBA</code> object. The
-	 * values are defined as passed parameters. These values are then clamped
-	 * to insure that they are between 0 and 1.
-	 * @param r The red component of this color.
-	 * @param g The green component of this <code>ColorRGBA</code>.
-	 * @param b The blue component of this <code>ColorRGBA</code>.
-	 * @param a The alpha component of this <code>ColorRGBA</code>.
+	 * Constructor instantiates a new <code>ColorRGBA</code> object. The values
+	 * are defined as passed parameters. These values are then clamped to insure
+	 * that they are between 0 and 1.
+	 * 
+	 * @param r
+	 *            The red component of this color.
+	 * @param g
+	 *            The green component of this <code>ColorRGBA</code>.
+	 * @param b
+	 *            The blue component of this <code>ColorRGBA</code>.
+	 * @param a
+	 *            The alpha component of this <code>ColorRGBA</code>.
 	 */
 	public RGBColor(float r, float g, float b, float a)
 	{
@@ -114,26 +119,32 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Copy constructor creates a new <code>ColorRGBA</code> object, based on
-	 * a provided color.
-	 * @param rgba The <code>ColorRGBA</code> object to copy.
+	 * Copy constructor creates a new <code>ColorRGBA</code> object, based on a
+	 * provided color.
+	 * 
+	 * @param rgba
+	 *            The <code>ColorRGBA</code> object to copy.
 	 */
 	public RGBColor(RGBColor rgba)
 	{
-		this.a = rgba.a;
-		this.r = rgba.r;
-		this.g = rgba.g;
-		this.b = rgba.b;
+		a = rgba.a;
+		r = rgba.r;
+		g = rgba.g;
+		b = rgba.b;
 	}
 
 	/**
-	 * <code>set</code> sets the RGBA values of this <code>ColorRGBA</code>. The 
+	 * <code>set</code> sets the RGBA values of this <code>ColorRGBA</code>. The
 	 * values are then clamped to insure that they are between 0 and 1.
-	 *
-	 * @param r The red component of this color.
-	 * @param g The green component of this color.
-	 * @param b The blue component of this color.
-	 * @param a The alpha component of this color.
+	 * 
+	 * @param r
+	 *            The red component of this color.
+	 * @param g
+	 *            The green component of this color.
+	 * @param b
+	 *            The blue component of this color.
+	 * @param a
+	 *            The alpha component of this color.
 	 * @return this
 	 */
 	public RGBColor set(float r, float g, float b, float a)
@@ -146,10 +157,11 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * <code>set</code> sets the values of this <code>ColorRGBA</code> to those 
+	 * <code>set</code> sets the values of this <code>ColorRGBA</code> to those
 	 * set by a parameter color.
-	 *
-	 * @param rgba The color to set this <code>ColorRGBA</code> to.
+	 * 
+	 * @param rgba
+	 *            The color to set this <code>ColorRGBA</code> to.
 	 * @return this
 	 */
 	public RGBColor set(RGBColor rgba)
@@ -173,8 +185,8 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 
 	/**
 	 * <code>clamp</code> insures that all values are between 0 and 1. If any
-	 * are less than 0 they are set to zero. If any are more than 1 they are
-	 * set to one.
+	 * are less than 0 they are set to zero. If any are more than 1 they are set
+	 * to one.
 	 */
 	public void clamp()
 	{
@@ -216,20 +228,24 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * <code>getColorArray</code> retrieves the color values of this 
-	 * <code>ColorRGBA</code> as a four element <code>float</code> array in the 
+	 * <code>getColorArray</code> retrieves the color values of this
+	 * <code>ColorRGBA</code> as a four element <code>float</code> array in the
 	 * order: r,g,b,a.
+	 * 
 	 * @return The <code>float</code> array that contains the color components.
 	 */
 	public float[] getColorArray()
 	{
-		return new float[] {r, g, b, a};
+		return new float[] { r, g, b, a };
 	}
 
 	/**
-	 * Stores the current r,g,b,a values into the given array.  The given array must have a
-	 * length of 4 or greater, or an array index out of bounds exception will be thrown.
-	 * @param store The <code>float</code> array to store the values into.
+	 * Stores the current r,g,b,a values into the given array. The given array
+	 * must have a length of 4 or greater, or an array index out of bounds
+	 * exception will be thrown.
+	 * 
+	 * @param store
+	 *            The <code>float</code> array to store the values into.
 	 * @return The <code>float</code> array after storage.
 	 */
 	public float[] getColorArray(float[] store)
@@ -243,6 +259,7 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 
 	/**
 	 * Retrieves the alpha component value of this <code>ColorRGBA</code>.
+	 * 
 	 * @return The alpha component value.
 	 */
 	public float getAlpha()
@@ -252,6 +269,7 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 
 	/**
 	 * Retrieves the red component value of this <code>ColorRGBA</code>.
+	 * 
 	 * @return The red component value.
 	 */
 	public float getRed()
@@ -261,6 +279,7 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 
 	/**
 	 * Retrieves the blue component value of this <code>ColorRGBA</code>.
+	 * 
 	 * @return The blue component value.
 	 */
 	public float getBlue()
@@ -270,6 +289,7 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 
 	/**
 	 * Retrieves the green component value of this <code>ColorRGBA</code>.
+	 * 
 	 * @return The green component value.
 	 */
 	public float getGreen()
@@ -278,46 +298,54 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Sets this <code>ColorRGBA</code> to the interpolation by changeAmnt from 
-	 * this to the finalColor:
-	 * this=(1-changeAmnt)*this + changeAmnt * finalColor
-	 * @param finalColor The final color to interpolate towards.
-	 * @param changeAmnt An amount between 0.0 - 1.0 representing a percentage
-	 *  change from this towards finalColor.
+	 * Sets this <code>ColorRGBA</code> to the interpolation by changeAmnt from
+	 * this to the finalColor: this=(1-changeAmnt)*this + changeAmnt *
+	 * finalColor
+	 * 
+	 * @param finalColor
+	 *            The final color to interpolate towards.
+	 * @param changeAmnt
+	 *            An amount between 0.0 - 1.0 representing a percentage change
+	 *            from this towards finalColor.
 	 */
 	public void interpolate(RGBColor finalColor, float changeAmnt)
 	{
-		this.r = (1 - changeAmnt) * this.r + changeAmnt * finalColor.r;
-		this.g = (1 - changeAmnt) * this.g + changeAmnt * finalColor.g;
-		this.b = (1 - changeAmnt) * this.b + changeAmnt * finalColor.b;
-		this.a = (1 - changeAmnt) * this.a + changeAmnt * finalColor.a;
+		r = (1 - changeAmnt) * r + changeAmnt * finalColor.r;
+		g = (1 - changeAmnt) * g + changeAmnt * finalColor.g;
+		b = (1 - changeAmnt) * b + changeAmnt * finalColor.b;
+		a = (1 - changeAmnt) * a + changeAmnt * finalColor.a;
 	}
 
 	/**
-	 * Sets this <code>ColorRGBA</code> to the interpolation by changeAmnt from 
-	 * beginColor to finalColor:
-	 * this=(1-changeAmnt)*beginColor + changeAmnt * finalColor
-	 * @param beginColor The begining color (changeAmnt=0).
-	 * @param finalColor The final color to interpolate towards (changeAmnt=1).
-	 * @param changeAmnt An amount between 0.0 - 1.0 representing a precentage
-	 *  change from beginColor towards finalColor.
+	 * Sets this <code>ColorRGBA</code> to the interpolation by changeAmnt from
+	 * beginColor to finalColor: this=(1-changeAmnt)*beginColor + changeAmnt *
+	 * finalColor
+	 * 
+	 * @param beginColor
+	 *            The begining color (changeAmnt=0).
+	 * @param finalColor
+	 *            The final color to interpolate towards (changeAmnt=1).
+	 * @param changeAmnt
+	 *            An amount between 0.0 - 1.0 representing a precentage change
+	 *            from beginColor towards finalColor.
 	 */
 	public void interpolate(RGBColor beginColor, RGBColor finalColor, float changeAmnt)
 	{
-		this.r = (1 - changeAmnt) * beginColor.r + changeAmnt * finalColor.r;
-		this.g = (1 - changeAmnt) * beginColor.g + changeAmnt * finalColor.g;
-		this.b = (1 - changeAmnt) * beginColor.b + changeAmnt * finalColor.b;
-		this.a = (1 - changeAmnt) * beginColor.a + changeAmnt * finalColor.a;
+		r = (1 - changeAmnt) * beginColor.r + changeAmnt * finalColor.r;
+		g = (1 - changeAmnt) * beginColor.g + changeAmnt * finalColor.g;
+		b = (1 - changeAmnt) * beginColor.b + changeAmnt * finalColor.b;
+		a = (1 - changeAmnt) * beginColor.a + changeAmnt * finalColor.a;
 	}
 
 	/**
 	 * <code>randomColor</code> is a utility method that generates a random
 	 * opaque color.
+	 * 
 	 * @return a random <code>ColorRGBA</code> with an alpha set to 1.
 	 */
 	public static RGBColor randomColor()
 	{
-		RGBColor rVal = new RGBColor(0, 0, 0, 1);
+		final RGBColor rVal = new RGBColor(0, 0, 0, 1);
 		rVal.r = FastMath.nextRandomFloat();
 		rVal.g = FastMath.nextRandomFloat();
 		rVal.b = FastMath.nextRandomFloat();
@@ -325,11 +353,13 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Multiplies each r,g,b,a of this <code>ColorRGBA</code> by the corresponding 
-	 * r,g,b,a of the given color and returns the result as a new <code>ColorRGBA</code>.  
-	 * Used as a way of combining colors and lights.
-	 * @param c The color to multiply by.
-	 * @return The new <code>ColorRGBA</code>.  this*c
+	 * Multiplies each r,g,b,a of this <code>ColorRGBA</code> by the
+	 * corresponding r,g,b,a of the given color and returns the result as a new
+	 * <code>ColorRGBA</code>. Used as a way of combining colors and lights.
+	 * 
+	 * @param c
+	 *            The color to multiply by.
+	 * @return The new <code>ColorRGBA</code>. this*c
 	 */
 	public RGBColor mult(RGBColor c)
 	{
@@ -337,11 +367,13 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Multiplies each r,g,b,a of this <code>ColorRGBA</code> by the given scalar and
-	 * returns the result as a new <code>ColorRGBA</code>.  
-	 * Used as a way of making colors dimmer or brighter.
-	 * @param scalar The scalar to multiply by.
-	 * @return The new <code>ColorRGBA</code>.  this*scalar
+	 * Multiplies each r,g,b,a of this <code>ColorRGBA</code> by the given
+	 * scalar and returns the result as a new <code>ColorRGBA</code>. Used as a
+	 * way of making colors dimmer or brighter.
+	 * 
+	 * @param scalar
+	 *            The scalar to multiply by.
+	 * @return The new <code>ColorRGBA</code>. this*scalar
 	 */
 	public RGBColor mult(float scalar)
 	{
@@ -349,27 +381,31 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Multiplies each r,g,b,a of this <code>ColorRGBA</code> by the given scalar and
-	 * returns the result (this).  
-	 * Used as a way of making colors dimmer or brighter.
-	 * @param scalar The scalar to multiply by.
+	 * Multiplies each r,g,b,a of this <code>ColorRGBA</code> by the given
+	 * scalar and returns the result (this). Used as a way of making colors
+	 * dimmer or brighter.
+	 * 
+	 * @param scalar
+	 *            The scalar to multiply by.
 	 * @return this*c
 	 */
 	public RGBColor multLocal(float scalar)
 	{
-		this.r *= scalar;
-		this.g *= scalar;
-		this.b *= scalar;
-		this.a *= scalar;
+		r *= scalar;
+		g *= scalar;
+		b *= scalar;
+		a *= scalar;
 		return this;
 	}
 
 	/**
-	 * Adds each r,g,b,a of this <code>ColorRGBA</code> by the corresponding 
-	 * r,g,b,a of the given color and returns the result as a new <code>ColorRGBA</code>.
-	 * Used as a way of combining colors and lights.
-	 * @param c The color to add.
-	 * @return The new <code>ColorRGBA</code>.  this+c
+	 * Adds each r,g,b,a of this <code>ColorRGBA</code> by the corresponding
+	 * r,g,b,a of the given color and returns the result as a new
+	 * <code>ColorRGBA</code>. Used as a way of combining colors and lights.
+	 * 
+	 * @param c
+	 *            The color to add.
+	 * @return The new <code>ColorRGBA</code>. this+c
 	 */
 	public RGBColor add(RGBColor c)
 	{
@@ -377,10 +413,12 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Adds each r,g,b,a of this <code>ColorRGBA</code> by the r,g,b,a the given 
-	 * color and returns the result (this).  
-	 * Used as a way of combining colors and lights.
-	 * @param c The color to add.
+	 * Adds each r,g,b,a of this <code>ColorRGBA</code> by the r,g,b,a the given
+	 * color and returns the result (this). Used as a way of combining colors
+	 * and lights.
+	 * 
+	 * @param c
+	 *            The color to add.
 	 * @return this+c
 	 */
 	public RGBColor addLocal(RGBColor c)
@@ -390,9 +428,10 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * <code>toString</code> returns the string representation of this <code>ColorRGBA</code>.
-	 * The format of the string is:<br>
+	 * <code>toString</code> returns the string representation of this
+	 * <code>ColorRGBA</code>. The format of the string is:<br>
 	 * <Class Name>: [R=RR.RRRR, G=GG.GGGG, B=BB.BBBB, A=AA.AAAA]
+	 * 
 	 * @return The string representation of this <code>ColorRGBA</code>.
 	 */
 	@Override
@@ -408,16 +447,21 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 		{
 			return (RGBColor) super.clone();
 		}
-		catch (CloneNotSupportedException e)
+		catch (final CloneNotSupportedException e)
 		{
-			throw new AssertionError(); // can not happen
+			throw new AssertionError(); // can not
+										// happen
 		}
 	}
 
 	/**
-	 * Saves this <code>ColorRGBA</code> into the given <code>float</code> array.
-	 * @param floats The <code>float</code> array to take this <code>ColorRGBA</code>. 
-	 * If null, a new <code>float[4]</code> is created.
+	 * Saves this <code>ColorRGBA</code> into the given <code>float</code>
+	 * array.
+	 * 
+	 * @param floats
+	 *            The <code>float</code> array to take this
+	 *            <code>ColorRGBA</code>. If null, a new <code>float[4]</code>
+	 *            is created.
 	 * @return The array, with r,g,b,a float values in that order.
 	 */
 	public float[] toArray(float[] floats)
@@ -434,10 +478,12 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * <code>equals</code> returns true if this <code>ColorRGBA</code> is logically equivalent
-	 * to a given color. That is, if all the components of the two colors are the same.
-	 * False is returned otherwise.
-	 * @param o The object to compare against.
+	 * <code>equals</code> returns true if this <code>ColorRGBA</code> is
+	 * logically equivalent to a given color. That is, if all the components of
+	 * the two colors are the same. False is returned otherwise.
+	 * 
+	 * @param o
+	 *            The object to compare against.
 	 * @return true if the colors are equal, false otherwise.
 	 */
 	@Override
@@ -447,7 +493,7 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 
 		if (this == o) return true;
 
-		RGBColor comp = (RGBColor) o;
+		final RGBColor comp = (RGBColor) o;
 		if (Float.compare(r, comp.r) != 0) return false;
 		if (Float.compare(g, comp.g) != 0) return false;
 		if (Float.compare(b, comp.b) != 0) return false;
@@ -456,9 +502,10 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * <code>hashCode</code> returns a unique code for this <code>ColorRGBA</code> based
-	 * on its values. If two colors are logically equivalent, they will return
-	 * the same hash code value.
+	 * <code>hashCode</code> returns a unique code for this
+	 * <code>ColorRGBA</code> based on its values. If two colors are logically
+	 * equivalent, they will return the same hash code value.
+	 * 
 	 * @return The hash code value of this <code>ColorRGBA</code>.
 	 */
 	@Override
@@ -473,13 +520,14 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Retrieves the component values of this <code>ColorRGBA</code> as
-	 * a four element <code>byte</code> array in the order: r,g,b,a.
+	 * Retrieves the component values of this <code>ColorRGBA</code> as a four
+	 * element <code>byte</code> array in the order: r,g,b,a.
+	 * 
 	 * @return the <code>byte</code> array that contains the color components.
 	 */
 	public byte[] asBytesRGBA()
 	{
-		byte[] store = new byte[4];
+		final byte[] store = new byte[4];
 		store[0] = (byte) ((int) (r * 255) & 0xFF);
 		store[1] = (byte) ((int) (g * 255) & 0xFF);
 		store[2] = (byte) ((int) (b * 255) & 0xFF);
@@ -488,46 +536,55 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Retrieves the component values of this <code>ColorRGBA</code> as an 
-	 * <code>int</code> in a,r,g,b order. 
-	 * Bits 24-31 are alpha, 16-23 are red, 8-15 are green, 0-7 are blue.
-	 * @return The integer representation of this <code>ColorRGBA</code> in a,r,g,b order.
+	 * Retrieves the component values of this <code>ColorRGBA</code> as an
+	 * <code>int</code> in a,r,g,b order. Bits 24-31 are alpha, 16-23 are red,
+	 * 8-15 are green, 0-7 are blue.
+	 * 
+	 * @return The integer representation of this <code>ColorRGBA</code> in
+	 *         a,r,g,b order.
 	 */
 	public int asIntARGB()
 	{
-		int argb = ((int) (a * 255) & 0xFF) << 24 | ((int) (r * 255) & 0xFF) << 16 | ((int) (g * 255) & 0xFF) << 8 | (int) (b * 255) & 0xFF;
+		final int argb = ((int) (a * 255) & 0xFF) << 24 | ((int) (r * 255) & 0xFF) << 16 | ((int) (g * 255) & 0xFF) << 8 | (int) (b * 255) & 0xFF;
 		return argb;
 	}
 
 	/**
-	 * Retrieves the component values of this <code>ColorRGBA</code> as an 
-	 * <code>int</code> in r,g,b,a order.
-	 * Bits 24-31 are red, 16-23 are green, 8-15 are blue, 0-7 are alpha.
-	 * @return The integer representation of this <code>ColorRGBA</code> in r,g,b,a order.
+	 * Retrieves the component values of this <code>ColorRGBA</code> as an
+	 * <code>int</code> in r,g,b,a order. Bits 24-31 are red, 16-23 are green,
+	 * 8-15 are blue, 0-7 are alpha.
+	 * 
+	 * @return The integer representation of this <code>ColorRGBA</code> in
+	 *         r,g,b,a order.
 	 */
 	public int asIntRGBA()
 	{
-		int rgba = ((int) (r * 255) & 0xFF) << 24 | ((int) (g * 255) & 0xFF) << 16 | ((int) (b * 255) & 0xFF) << 8 | (int) (a * 255) & 0xFF;
+		final int rgba = ((int) (r * 255) & 0xFF) << 24 | ((int) (g * 255) & 0xFF) << 16 | ((int) (b * 255) & 0xFF) << 8 | (int) (a * 255) & 0xFF;
 		return rgba;
 	}
 
 	/**
-	 * Retrieves the component values of this <code>ColorRGBA</code> as an 
-	 * <code>int</code> in a,b,g,r order.
-	 * Bits 24-31 are alpha, 16-23 are blue, 8-15 are green, 0-7 are red.
-	 * @return The integer representation of this <code>ColorRGBA</code> in a,b,g,r order.
+	 * Retrieves the component values of this <code>ColorRGBA</code> as an
+	 * <code>int</code> in a,b,g,r order. Bits 24-31 are alpha, 16-23 are blue,
+	 * 8-15 are green, 0-7 are red.
+	 * 
+	 * @return The integer representation of this <code>ColorRGBA</code> in
+	 *         a,b,g,r order.
 	 */
 	public int asIntABGR()
 	{
-		int abgr = ((int) (a * 255) & 0xFF) << 24 | ((int) (b * 255) & 0xFF) << 16 | ((int) (g * 255) & 0xFF) << 8 | (int) (r * 255) & 0xFF;
+		final int abgr = ((int) (a * 255) & 0xFF) << 24 | ((int) (b * 255) & 0xFF) << 16 | ((int) (g * 255) & 0xFF) << 8 | (int) (r * 255) & 0xFF;
 		return abgr;
 	}
 
 	/**
-	 * Sets the component values of this <code>ColorRGBA</code> with the given  
-	 * combined ARGB <code>int</code>.
-	 * Bits 24-31 are alpha, bits 16-23 are red, bits 8-15 are green, bits 0-7 are blue.
-	 * @param color The integer ARGB value used to set this <code>ColorRGBA</code>.
+	 * Sets the component values of this <code>ColorRGBA</code> with the given
+	 * combined ARGB <code>int</code>. Bits 24-31 are alpha, bits 16-23 are red,
+	 * bits 8-15 are green, bits 0-7 are blue.
+	 * 
+	 * @param color
+	 *            The integer ARGB value used to set this <code>ColorRGBA</code>
+	 *            .
 	 */
 	public void fromIntARGB(int color)
 	{
@@ -538,9 +595,12 @@ public final class RGBColor implements Cloneable, java.io.Serializable
 	}
 
 	/**
-	 * Sets the RGBA values of this <code>ColorRGBA</code> with the given combined RGBA value 
-	 * Bits 24-31 are red, bits 16-23 are green, bits 8-15 are blue, bits 0-7 are alpha.
-	 * @param color The integer RGBA value used to set this object.
+	 * Sets the RGBA values of this <code>ColorRGBA</code> with the given
+	 * combined RGBA value Bits 24-31 are red, bits 16-23 are green, bits 8-15
+	 * are blue, bits 0-7 are alpha.
+	 * 
+	 * @param color
+	 *            The integer RGBA value used to set this object.
 	 */
 	public void fromIntRGBA(int color)
 	{
